@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#eef1f6" id="theme-color-meta">
+  <title>FAQ — MCU Viewing Order</title>
+  <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
+  <script>(function(){var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark');})()</script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .faq-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .faq-header h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+    }
+
+    .faq-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-strong);
+      overflow: hidden;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .faq-item[open] {
+      border-color: color-mix(in oklab, var(--accent) 30%, transparent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .faq-item summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 22px;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      transition: background 0.2s ease;
+    }
+
+    .faq-item summary::-webkit-details-marker { display: none; }
+
+    .faq-item summary:hover {
+      background: var(--accent-soft);
+    }
+
+    .faq-item[open] summary {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .faq-chevron {
+      flex-shrink: 0;
+      color: var(--muted);
+      transition: transform 0.25s ease, color 0.25s ease;
+    }
+
+    .faq-item[open] .faq-chevron {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+
+    .faq-answer {
+      padding: 0 22px 20px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      border-top: 1px solid var(--border);
+    }
+
+    .faq-answer p {
+      margin: 14px 0 0;
+    }
+
+    .faq-answer p:first-child {
+      margin-top: 16px;
+    }
+
+    .faq-answer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .faq-answer a:hover {
+      text-decoration: underline;
+    }
+
+    body.dark .faq-item {
+      background: rgba(28, 31, 40, 0.92);
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+
+    <header class="topbar">
+      <div class="brand">
+        <a href="index.html" class="brand-mark" aria-label="MCU Nexus Home">
+          <svg class="arc-logo-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle class="arc-ring-outer" cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle class="arc-ring-inner" cx="16" cy="16" r="10" stroke="currentColor" stroke-width="1" stroke-dasharray="10 4"/>
+            <polygon class="arc-core" points="16,10 22,20 10,20" fill="currentColor"/>
+            <circle cx="16" cy="16" r="2.5" fill="#ffffff" />
+          </svg>
+        </a>
+        <a href="index.html" class="brand-text-link"><span class="brand-text">
+          <strong>MCU Nexus</strong>
+        </span></a>
+      </div>
+      <nav class="topbar-nav" aria-label="Primary">
+        <a href="index.html">Viewing Order</a>
+        <a href="upcoming.html">Upcoming</a>
+        <a href="shows.html">Show Status</a>
+        <a href="faq.html" aria-current="page">FAQ</a>
+      </nav>
+      <div class="topbar-actions">
+        <div class="menu-toggle">
+          <button id="hamburger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="dropdown">
+            <svg id="hamburger-icon" class="hamburger-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+              <line x1="2" y1="4.5" x2="14" y2="4.5"/>
+              <line x1="2" y1="8" x2="14" y2="8"/>
+              <line x1="2" y1="11.5" x2="14" y2="11.5"/>
+            </svg>
+          </button>
+          <div id="dropdown" class="dropdown hidden">
+            <a href="index.html">
+              <img src="assets/menubar/home.svg" class="dropdown-icon" alt="">
+              <span>Viewing Order</span>
+            </a>
+            <a href="upcoming.html">
+              <img src="assets/menubar/articles.svg" class="dropdown-icon" alt="">
+              <span>Upcoming</span>
+            </a>
+            <a href="shows.html">
+              <img src="assets/menubar/products.svg" class="dropdown-icon" alt="">
+              <span>Show Status</span>
+            </a>
+            <a href="faq.html" aria-current="page">
+              <img src="assets/menubar/faq.svg" class="dropdown-icon" alt="">
+              <span>FAQ</span>
+            </a>
+            <hr class="dropdown-separator">
+            <div class="theme-picker-group">
+              <span class="theme-picker-label">MCU Mood:</span>
+              <div class="theme-dot theme-dot-classic active" data-theme="classic" title="Nexus Standard"></div>
+              <div class="theme-dot theme-dot-stark" data-theme="stark" title="Stark Tech"></div>
+              <div class="theme-dot theme-dot-tva" data-theme="tva" title="TVA Chronicle"></div>
+              <div class="theme-dot theme-dot-wakanda" data-theme="wakanda" title="Wakanda Vibranium"></div>
+              <div class="theme-dot theme-dot-sorcerer" data-theme="sorcerer" title="Sorcerer Supreme"></div>
+            </div>
+            <hr class="dropdown-separator">
+            <a id="floating-theme-toggle" href="#" title="Toggle Theme">
+              <img src="assets/menubar/toggletheme.svg" class="dropdown-icon" alt="">
+              <span>Toggle Theme</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="surface-card faq-header">
+      <h1>Frequently Asked Questions</h1>
+      <p>Everything you need to know about my MCU Viewing Order and how it works.</p>
+    </div>
+
+    <div class="faq-list">
+
+      <details class="faq-item">
+        <summary>
+          How long have you been maintaining this?
+          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="2,3 5,7 8,3"/>
+          </svg>
+        </summary>
+        <div class="faq-answer">
+          <p>I started this project on November 6, 2015 and have been keeping it up to date ever since. The spark came when Marvel TV was ramping up production on a lot of shows and I knew it was only going to get harder to track what to watch and in what order.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          How did you decide on this viewing order?
+          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="2,3 5,7 8,3"/>
+          </svg>
+        </summary>
+        <div class="faq-answer">
+          <p>This list predates any official viewing order from Disney or Marvel, so it was originally put together by a group of very dedicated fans from the Marvel Studios Discord. Once Disney+ released their own order and the <em>Marvel Cinematic Universe: An Official Timeline</em> book became available, we used both to refine and adjust certain entries.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          Should I watch in release or chronological order?
+          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="2,3 5,7 8,3"/>
+          </svg>
+        </summary>
+        <div class="faq-answer">
+          <p>If this is your first time watching the MCU, I recommend release order so you can experience the story the way Marvel originally presented it.</p>
+          <p>If you're doing a rewatch, chronological order can be a fun shake-up that adds a new perspective to the overall experience.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          Can I suggest an edit?
+          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="2,3 5,7 8,3"/>
+          </svg>
+        </summary>
+        <div class="faq-answer">
+          <p>You're always welcome to suggest a change to the order, though I'll be upfront - the odds of me making that kind of adjustment are slim, as the ordering has been carefully considered over many years.</p>
+          <p>That said, if you spot missing or incorrect data, I'm absolutely happy to fix it. That includes things like wrong release dates, incorrect universe designations, or content that's missing entirely. Those kinds of corrections are always appreciated.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          How does this site work?
+          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="2,3 5,7 8,3"/>
+          </svg>
+        </summary>
+        <div class="faq-answer">
+          <p>You can filter content by Studio, Canon status, and Universe designation, and sort everything by either release order or chronological order.</p>
+          <p>As you work through the list, you can mark each title as watched and a live progress tracker at the top of the page will update in real time. <strong>All of this is saved locally in your browser — if you're using incognito mode or you clear your cache, your progress will be lost.</strong></p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          How do I back up or restore my progress?
+          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="2,3 5,7 8,3"/>
+          </svg>
+        </summary>
+        <div class="faq-answer">
+          <p>You can export your watch progress as a short code using the <strong>Export Progress</strong> option in the menu. Save that code somewhere - a note on your phone, a text file, anywhere handy.</p>
+          <p>If you ever lose your progress (switching browsers, clearing your cache, getting a new device), open the menu, tap <strong>Import Progress</strong>, paste the code, and your watch history will be fully restored.</p>
+          <p>The code is based entirely on what you've marked as watched, so it's not tied to any account and works on any device.</p>
+        </div>
+      </details>
+
+
+    </div>
+
+    <footer class="legal-footer">
+      <p>Marvel, the Marvel logo, and all Marvel characters, titles, and related content are trademarks and &copy; of Marvel Entertainment, LLC. All rights reserved. This site is an unofficial fan resource and is not affiliated with, endorsed by, or connected to Marvel Entertainment, LLC, The Walt Disney Company, or any of their subsidiaries. All film, television, and streaming content referenced belongs to their respective owners.</p>
+    </footer>
+
+  </div>
+  <script>
+    const applyTheme = (theme) => {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      document.body.classList.toggle("dark", theme === "dark");
+      const meta = document.getElementById("theme-color-meta");
+      if (meta) meta.setAttribute("content", theme === "dark" ? "#0d1016" : "#eef1f6");
+      localStorage.setItem("theme", theme);
+      if (theme === "light") {
+        applyMoodTheme("classic");
+      }
+    };
+    applyTheme(localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+
+    document.getElementById("floating-theme-toggle")?.addEventListener("click", e => {
+      e.preventDefault();
+      applyTheme(document.body.classList.contains("dark") ? "light" : "dark");
+    });
+
+    function applyMoodTheme(mood) {
+      document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer");
+      if (mood && mood !== "classic") {
+        document.body.classList.add(`theme-${mood}`);
+        if (!document.body.classList.contains("dark")) {
+          applyTheme("dark");
+        }
+      }
+      localStorage.setItem("mcu_mood_theme", mood);
+      document.querySelectorAll(".theme-dot").forEach(dot => {
+        dot.classList.toggle("active", dot.getAttribute("data-theme") === mood);
+      });
+    }
+
+    const savedMood = localStorage.getItem("mcu_mood_theme") || "classic";
+    applyMoodTheme(savedMood);
+
+    document.querySelectorAll(".theme-dot").forEach(dot => {
+      dot.addEventListener("click", event => {
+        applyMoodTheme(dot.getAttribute("data-theme"));
+      });
+    });
+
+    const hamburger = document.getElementById("hamburger");
+    const hamburgerIcon = document.getElementById("hamburger-icon");
+    const dropdown = document.getElementById("dropdown");
+
+    hamburger?.addEventListener("click", e => {
+      e.stopPropagation();
+      const isOpen = !dropdown.classList.toggle("hidden");
+      hamburger.setAttribute("aria-expanded", String(isOpen));
+      hamburgerIcon.classList.toggle("open", isOpen);
+    });
+
+    dropdown?.addEventListener("click", e => e.stopPropagation());
+
+    document.addEventListener("click", () => {
+      dropdown?.classList.add("hidden");
+      hamburger?.setAttribute("aria-expanded", "false");
+      hamburgerIcon?.classList.remove("open");
+    });
+
+    document.querySelectorAll("[data-coming-soon]").forEach(link => {
+      link.addEventListener("click", e => e.preventDefault());
+    });
+  </script>
+</body>
+</html>

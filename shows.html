@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#eef1f6" id="theme-color-meta">
+  <title>Show Status — MCU Viewing Order</title>
+  <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
+  <script>(function(){var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark');})()</script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .shows-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .shows-header h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.8rem); }
+    .shows-header p  { margin: 0; color: var(--muted); font-size: 1rem; line-height: 1.6; }
+
+    /* ── Section card ── */
+    .status-section {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 20px 20px 12px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .section-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--dot-color);
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .section-count {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--muted);
+      opacity: 0.6;
+    }
+
+    /* ── Show rows ── */
+    .show-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      transition: background 0.15s ease;
+      min-width: 0;
+    }
+    .show-row:hover { background: var(--accent-soft); }
+
+    .show-source {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+      background: color-mix(in oklab, var(--source-color) 14%, transparent);
+      color: var(--source-color);
+      border: 1px solid color-mix(in oklab, var(--source-color) 35%, transparent);
+    }
+
+    .show-source-cell {
+      width: 90px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .show-name {
+      flex: 1;
+      font-size: 0.94rem;
+      font-weight: 500;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .show-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .show-detail {
+      font-size: 0.84rem;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .show-note {
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      padding: 0 7px;
+      border-radius: 999px;
+      font-size: 0.66rem;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+      background: rgba(22, 163, 74, 0.12);
+      color: #16a34a;
+      border: 1px solid rgba(22, 163, 74, 0.25);
+    }
+    body.dark .show-note {
+      background: rgba(74, 222, 128, 0.1);
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, 0.2);
+    }
+
+    .show-note-muted {
+      background: var(--bg-strong);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* ── Compact 2-col grid for ended/canceled/not picked up ── */
+    .show-grid {
+      column-count: 2;
+      column-gap: 0;
+    }
+
+    .show-grid .show-row {
+      break-inside: avoid;
+    }
+
+    @media (max-width: 820px) {
+      .show-detail { font-size: 0.78rem; }
+    }
+
+    @media (max-width: 600px) {
+      .show-grid { column-count: 1; }
+
+      .show-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        padding: 12px 14px;
+      }
+
+      .show-source-cell {
+        width: auto;
+      }
+
+      .show-name {
+        white-space: normal;
+        font-size: 0.96rem;
+      }
+
+      .show-right {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 6px;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+
+    <header class="topbar">
+      <div class="brand">
+        <a href="index.html" class="brand-mark" aria-label="MCU Nexus Home">
+          <svg class="arc-logo-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle class="arc-ring-outer" cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle class="arc-ring-inner" cx="16" cy="16" r="10" stroke="currentColor" stroke-width="1" stroke-dasharray="10 4"/>
+            <polygon class="arc-core" points="16,10 22,20 10,20" fill="currentColor"/>
+            <circle cx="16" cy="16" r="2.5" fill="#ffffff" />
+          </svg>
+        </a>
+        <a href="index.html" class="brand-text-link"><span class="brand-text">
+          <strong>MCU Nexus</strong>
+        </span></a>
+      </div>
+      <nav class="topbar-nav" aria-label="Primary">
+        <a href="index.html">Viewing Order</a>
+        <a href="upcoming.html">Upcoming</a>
+        <a href="shows.html" aria-current="page">Show Status</a>
+        <a href="faq.html">FAQ</a>
+      </nav>
+      <div class="topbar-actions">
+        <div class="menu-toggle">
+          <button id="hamburger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="dropdown">
+            <svg id="hamburger-icon" class="hamburger-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+              <line x1="2" y1="4.5" x2="14" y2="4.5"/>
+              <line x1="2" y1="8" x2="14" y2="8"/>
+              <line x1="2" y1="11.5" x2="14" y2="11.5"/>
+            </svg>
+          </button>
+          <div id="dropdown" class="dropdown hidden">
+            <a href="index.html">
+              <img src="assets/menubar/home.svg" class="dropdown-icon" alt="">
+              <span>Viewing Order</span>
+            </a>
+            <a href="upcoming.html">
+              <img src="assets/menubar/articles.svg" class="dropdown-icon" alt="">
+              <span>Upcoming</span>
+            </a>
+            <a href="shows.html" aria-current="page">
+              <img src="assets/menubar/products.svg" class="dropdown-icon" alt="">
+              <span>Show Status</span>
+            </a>
+            <a href="faq.html">
+              <img src="assets/menubar/faq.svg" class="dropdown-icon" alt="">
+              <span>FAQ</span>
+            </a>
+            <hr class="dropdown-separator">
+            <div class="theme-picker-group">
+              <span class="theme-picker-label">MCU Mood:</span>
+              <div class="theme-dot theme-dot-classic active" data-theme="classic" title="Nexus Standard"></div>
+              <div class="theme-dot theme-dot-stark" data-theme="stark" title="Stark Tech"></div>
+              <div class="theme-dot theme-dot-tva" data-theme="tva" title="TVA Chronicle"></div>
+              <div class="theme-dot theme-dot-wakanda" data-theme="wakanda" title="Wakanda Vibranium"></div>
+              <div class="theme-dot theme-dot-sorcerer" data-theme="sorcerer" title="Sorcerer Supreme"></div>
+            </div>
+            <hr class="dropdown-separator">
+            <a id="floating-theme-toggle" href="#" title="Toggle Theme">
+              <img src="assets/menubar/toggletheme.svg" class="dropdown-icon" alt="">
+              <span>Toggle Theme</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="surface-card shows-header">
+      <h1>Show Status</h1>
+      <p>Renewal, cancellation, and production status for every MCU television series.</p>
+    </div>
+
+    <div id="shows-container" style="display:flex;flex-direction:column;gap:16px"></div>
+
+    <footer class="legal-footer">
+      <p>Marvel, the Marvel logo, and all Marvel characters, titles, and related content are trademarks and &copy; of Marvel Entertainment, LLC. All rights reserved. This site is an unofficial fan resource and is not affiliated with, endorsed by, or connected to Marvel Entertainment, LLC, The Walt Disney Company, or any of their subsidiaries. All film, television, and streaming content referenced belongs to their respective owners.</p>
+    </footer>
+
+  </div>
+  <script src="data.js"></script>
+  <script>
+    const SOURCE_TINTS = {
+      "Disney+":       "#7b7cf8",
+      "ABC":           "#0ea36a",
+      "Netflix":       "#e87722",
+      "Hulu":          "#1ce783",
+      "Freeform":      "#9b5de5",
+      "Prime Video":   "#00b4d8"
+    };
+
+    const SECTIONS = [
+      { key: "active",       label: "Active",        dot: "#16a34a" },
+      { key: "ended",        label: "Ended",         dot: "#dc2626" },
+      { key: "canceled",     label: "Canceled",      dot: "#dc2626" },
+      { key: "not_picked_up", label: "Not Picked Up", dot: "#d97706" }
+    ];
+
+    function sourceTag(source) {
+      const color = SOURCE_TINTS[source] || "#8d99ae";
+      return `<div class="show-source-cell"><span class="show-source" style="--source-color:${color}">${source}</span></div>`;
+    }
+
+    function renderActive(shows) {
+      return shows.map(s => `
+        <div class="show-row">
+          ${sourceTag(s.source)}
+          <span class="show-name">${s.show}</span>
+          <div class="show-right">
+            ${s.detail ? `<span class="show-detail">${s.detail}</span>` : ""}
+            ${s.note   ? `<span class="show-note">${s.note}</span>` : ""}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderCompact(shows) {
+      return `<div class="show-grid">${shows.map(s => `
+        <div class="show-row">
+          ${sourceTag(s.source)}
+          <span class="show-name">${s.show}</span>
+          ${s.note ? `<span class="show-note show-note-muted">${s.note}</span>` : ""}
+        </div>
+      `).join("")}</div>`;
+    }
+
+    async function load() {
+      let data;
+      if (window.SHOWS_DATA) {
+        data = window.SHOWS_DATA;
+      } else {
+        try {
+          const res  = await fetch("shows.json");
+          data = await res.json();
+        } catch (e) {
+          console.warn("Fetch failed, falling back to window.SHOWS_DATA:", e);
+          data = window.SHOWS_DATA || [];
+        }
+      }
+
+      const grouped = {};
+      SECTIONS.forEach(s => { grouped[s.key] = []; });
+      data.forEach(item => { if (grouped[item.category]) grouped[item.category].push(item); });
+
+      const container = document.getElementById("shows-container");
+      container.innerHTML = SECTIONS.map(({ key, label, dot }) => {
+        const shows = grouped[key];
+        if (!shows.length) return "";
+        const isActive = key === "active";
+        return `
+          <div class="status-section surface-card">
+            <div class="section-header">
+              <span class="section-dot" style="--dot-color:${dot}"></span>
+              <span class="section-title">${label}</span>
+              <span class="section-count">${shows.length} shows</span>
+            </div>
+            ${isActive ? renderActive(shows) : renderCompact(shows)}
+          </div>
+        `;
+      }).join("");
+    }
+
+    // ─── Theme ───
+    const applyTheme = (theme) => {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      document.body.classList.toggle("dark", theme === "dark");
+      const meta = document.getElementById("theme-color-meta");
+      if (meta) meta.setAttribute("content", theme === "dark" ? "#0d1016" : "#eef1f6");
+      localStorage.setItem("theme", theme);
+      if (theme === "light") {
+        applyMoodTheme("classic");
+      }
+    };
+    applyTheme(localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+
+    document.getElementById("floating-theme-toggle")?.addEventListener("click", e => {
+      e.preventDefault();
+      applyTheme(document.body.classList.contains("dark") ? "light" : "dark");
+    });
+
+    function applyMoodTheme(mood) {
+      document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer");
+      if (mood && mood !== "classic") {
+        document.body.classList.add(`theme-${mood}`);
+        if (!document.body.classList.contains("dark")) {
+          applyTheme("dark");
+        }
+      }
+      localStorage.setItem("mcu_mood_theme", mood);
+      document.querySelectorAll(".theme-dot").forEach(dot => {
+        dot.classList.toggle("active", dot.getAttribute("data-theme") === mood);
+      });
+    }
+
+    const savedMood = localStorage.getItem("mcu_mood_theme") || "classic";
+    applyMoodTheme(savedMood);
+
+    document.querySelectorAll(".theme-dot").forEach(dot => {
+      dot.addEventListener("click", event => {
+        applyMoodTheme(dot.getAttribute("data-theme"));
+      });
+    });
+
+    // ─── Hamburger ───
+    const hamburger     = document.getElementById("hamburger");
+    const hamburgerIcon = document.getElementById("hamburger-icon");
+    const dropdown      = document.getElementById("dropdown");
+
+    hamburger?.addEventListener("click", e => {
+      e.stopPropagation();
+      const isOpen = !dropdown.classList.toggle("hidden");
+      hamburger.setAttribute("aria-expanded", String(isOpen));
+      hamburgerIcon.classList.toggle("open", isOpen);
+    });
+
+    dropdown?.addEventListener("click", e => e.stopPropagation());
+
+    document.addEventListener("click", () => {
+      dropdown?.classList.add("hidden");
+      hamburger?.setAttribute("aria-expanded", "false");
+      hamburgerIcon?.classList.remove("open");
+    });
+
+    document.querySelectorAll("[data-coming-soon]").forEach(link => {
+      link.addEventListener("click", e => e.preventDefault());
+    });
+
+    load();
+  </script>
+</body>
+</html>
