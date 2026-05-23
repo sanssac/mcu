@@ -562,9 +562,10 @@ async function loadData() {
     });
   });
 
-initFilterDropdowns();
+  initFilterDropdowns();
   initDashboard();
   initScrollMap();
+  initFloatingProgressPill();
   initJourneyTracker();
   initTimelineCanvas();
 
@@ -1159,6 +1160,16 @@ function updateStats() {
   el("stat-time-remaining").textContent = formatRuntimeShort(totalRuntime - watchedRuntime);
   el("progressBar").style.width        = `${percent}%`;
 
+  // Bind to compact floating progress pill
+  const pillPercent = el("floating-pill-percent");
+  const pillTime = el("floating-pill-time");
+  if (pillPercent) {
+    pillPercent.textContent = `${percent}%`;
+  }
+  if (pillTime) {
+    pillTime.textContent = `${formatRuntimeShort(totalRuntime - watchedRuntime)} left`;
+  }
+
   renderPhaseProgress();
 }
 
@@ -1685,6 +1696,23 @@ function initScrollMap() {
   };
 }
 
+function initFloatingProgressPill() {
+  const floatingPill = document.getElementById("floatingProgressPill");
+  if (!floatingPill) return;
+
+  // Initial update
+  updateStats();
+
+  window.addEventListener("scroll", () => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    if (scrollTop > 250) {
+      floatingPill.classList.add("visible");
+    } else {
+      floatingPill.classList.remove("visible");
+    }
+  });
+}
+
 function initJourneyTracker() {
   const journeyPills = document.querySelectorAll(".journey-pill");
   const clearJourneyBtn = document.getElementById("clearJourneyBtn");
@@ -1812,14 +1840,70 @@ function initJourneyTracker() {
 
 function updateNextUpBanner(data) {
   const banner = document.getElementById("nextUpBanner");
+  const floatingPill = document.getElementById("floatingNextUpPill");
   if (!banner) return;
 
   if (!data || data.length === 0) {
     banner.classList.add("hidden");
+    if (floatingPill) floatingPill.classList.remove("visible");
     return;
   }
 
   const nextUnwatched = data.find(item => localStorage.getItem(`watched_${item.id}`) !== "true");
+
+  // Dynamic floating Next Up pill updates
+  if (floatingPill) {
+    if (!nextUnwatched) {
+      floatingPill.classList.remove("visible");
+    } else {
+      floatingPill.classList.add("visible");
+      
+      const pillTitle = document.getElementById("floating-next-title");
+      if (pillTitle) {
+        pillTitle.textContent = nextUnwatched.title;
+        pillTitle.title = `Next: ${nextUnwatched.title}`;
+      }
+
+      const pillIcon = document.getElementById("floating-next-icon");
+      if (pillIcon) {
+        if (activeJourney) {
+          pillIcon.innerHTML = `<img src="assets/journeys/${activeJourney}.png" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        } else {
+          pillIcon.innerHTML = `🛰️`;
+        }
+      }
+
+      const nextContent = document.getElementById("floating-next-content");
+      if (nextContent) {
+        nextContent.onclick = () => {
+          const card = document.querySelector(`.mcu-card[data-id="${nextUnwatched.id}"]`);
+          if (card) {
+            card.scrollIntoView({ behavior: "smooth", block: "center" });
+            card.style.transform = "scale(1.04)";
+            card.style.borderColor = "var(--accent)";
+            setTimeout(() => {
+              card.style.transform = "";
+              card.style.borderColor = "";
+            }, 1200);
+          }
+        };
+      }
+
+      const nextCheck = document.getElementById("floating-next-check");
+      if (nextCheck) {
+        nextCheck.onclick = (e) => {
+          e.stopPropagation();
+          localStorage.setItem(`watched_${nextUnwatched.id}`, "true");
+          nextCheck.style.transform = "scale(0.8)";
+          setTimeout(() => {
+            nextCheck.style.transform = "";
+            renderList(filteredData());
+            updateStats();
+          }, 150);
+        };
+      }
+    }
+  }
 
   if (!nextUnwatched) {
     banner.classList.remove("hidden");

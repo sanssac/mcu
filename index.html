@@ -188,105 +188,6 @@
       </div>
     </div>
 
-    <div class="search-panel">
-      <div class="search-wrap">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input type="text" id="search" placeholder="Search titles…" autocomplete="off" spellcheck="false">
-        <button id="searchClear" class="search-clear" aria-label="Clear search" hidden>
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="sticky-controls">
-      <div class="order-toggle" role="group" aria-label="Viewing order">
-        <button class="order-toggle-option" type="button" data-sort-mode="release" aria-pressed="true">Release</button>
-        <button class="order-toggle-option" type="button" data-sort-mode="chronological" aria-pressed="false">Chronological</button>
-      </div>
-
-      <div class="control-actions">
-        <div class="filter-dropdown filters-dropdown">
-          <button class="filter-pill filters-pill" id="filtersBtn" type="button" aria-label="Filters">
-            <span class="btn-label">Filters</span>
-            <span class="filter-count" hidden></span>
-            <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,3 5,7 8,3"/></svg>
-          </button>
-          <div class="filter-dropdown-panel filters-panel hidden" id="filtersPanel">
-            <div class="filters-panel-grid">
-              <section class="filter-section" id="typeFilter">
-                <div class="filter-section-header">
-                  <span>Studio</span>
-                  <div class="filter-panel-actions">
-                    <button class="filter-panel-action" type="button" onclick="selectFilterPanel('#typeFilter')">Select all</button>
-                    <button class="filter-panel-action clear-filter" type="button" onclick="clearFilterPanel('#typeFilter')">Clear</button>
-                  </div>
-                </div>
-                <div class="type-checkboxes"></div>
-              </section>
-
-              <section class="filter-section multiverse-filter-section" id="multiverseFilter">
-                <div class="filter-section-header">
-                  <span>Multiverse</span>
-                  <div class="filter-panel-actions">
-                    <button class="filter-panel-action" type="button" onclick="selectFilterPanel('#multiverseFilter')">Select all</button>
-                    <button class="filter-panel-action clear-filter" type="button" onclick="clearFilterPanel('#multiverseFilter')">Clear</button>
-                  </div>
-                </div>
-                <div class="multiverse-checkboxes"></div>
-              </section>
-
-              <section class="filter-section" id="canonFilter">
-                <div class="filter-section-header">
-                  <span>Canon</span>
-                  <div class="filter-panel-actions">
-                    <button class="filter-panel-action" type="button" onclick="selectFilterPanel('#canonFilter')">Select all</button>
-                    <button class="filter-panel-action clear-filter" type="button" onclick="clearFilterPanel('#canonFilter')">Clear</button>
-                  </div>
-                </div>
-                <label class="filter-chip"><input type="checkbox" value="true"><span>Canon</span></label>
-                <label class="filter-chip"><input type="checkbox" value="false"><span>Non-Canon</span></label>
-              </section>
-            </div>
-          </div>
-        </div>
-
-        <div class="filter-dropdown sort-dropdown">
-          <button class="filter-pill sort-filter-pill" id="sortFilterBtn" type="button" aria-label="View: Old to New">
-            <span class="btn-label">View</span>
-            <span class="sort-summary" aria-hidden="true">Old → New</span>
-            <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,3 5,7 8,3"/></svg>
-          </button>
-          <div class="filter-dropdown-panel sort-dropdown-panel hidden" id="sortFilter">
-            <label class="pill-toggle option-toggle">
-              <input type="checkbox" id="hideWatched">
-              <span>Hide watched</span>
-            </label>
-            <div class="sort-panel-section">
-              <span class="sort-panel-label">Direction</span>
-              <div class="sort-segment" role="group" aria-label="Sort direction">
-                <button class="sort-segment-option" type="button" data-sort-direction="asc" aria-pressed="true">Old → New</button>
-                <button class="sort-segment-option" type="button" data-sort-direction="desc" aria-pressed="false">New → Old</button>
-              </div>
-            </div>
-            <div class="sort-panel-section density-section">
-              <span class="sort-panel-label">View</span>
-              <div class="view-toggle option-view-toggle" role="group" aria-label="View density">
-                <button class="view-toggle-option" type="button" data-view-mode="comfortable" aria-pressed="true">Comfortable</button>
-                <button class="view-toggle-option" type="button" data-view-mode="compact" aria-pressed="false">Compact</button>
-                <button class="view-toggle-option" type="button" data-view-mode="list" aria-pressed="false">List</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button id="clearAllBtn" class="clear-all-btn" hidden>
-          <span class="clear-label-full">Clear filters</span>
-          <span class="clear-label-short">Clear</span>
-        </button>
-      </div>
-    </div>
-
     <div class="mcu-journeys-deck surface-card">
       <div class="journeys-header">
         <div class="journeys-title-group">
@@ -322,8 +223,108 @@
         </button>
       </div>
     </div>
-
     <div id="nextUpBanner" class="mcu-next-up surface-card hidden"></div>
+
+    <div class="sticky-controls combined-controls">
+      <div class="search-panel-embedded">
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" id="search" placeholder="Search titles…" autocomplete="off" spellcheck="false">
+          <button id="searchClear" class="search-clear" aria-label="Clear search" hidden>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sorting-panel-embedded">
+        <div class="order-toggle" role="group" aria-label="Viewing order">
+          <button class="order-toggle-option" type="button" data-sort-mode="release" aria-pressed="true">Release</button>
+          <button class="order-toggle-option" type="button" data-sort-mode="chronological" aria-pressed="false">Chronological</button>
+        </div>
+
+        <div class="control-actions">
+          <div class="filter-dropdown filters-dropdown">
+            <button class="filter-pill filters-pill" id="filtersBtn" type="button" aria-label="Filters">
+              <span class="btn-label">Filters</span>
+              <span class="filter-count" hidden></span>
+              <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,3 5,7 8,3"/></svg>
+            </button>
+            <div class="filter-dropdown-panel filters-panel hidden" id="filtersPanel">
+              <div class="filters-panel-grid">
+                <section class="filter-section" id="typeFilter">
+                  <div class="filter-section-header">
+                    <span>Studio</span>
+                    <div class="filter-panel-actions">
+                      <button class="filter-panel-action" type="button" onclick="selectFilterPanel('#typeFilter')">Select all</button>
+                      <button class="filter-panel-action clear-filter" type="button" onclick="clearFilterPanel('#typeFilter')">Clear</button>
+                    </div>
+                  </div>
+                  <div class="type-checkboxes"></div>
+                </section>
+
+                <section class="filter-section multiverse-filter-section" id="multiverseFilter">
+                  <div class="filter-section-header">
+                    <span>Multiverse</span>
+                    <div class="filter-panel-actions">
+                      <button class="filter-panel-action" type="button" onclick="selectFilterPanel('#multiverseFilter')">Select all</button>
+                      <button class="filter-panel-action clear-filter" type="button" onclick="clearFilterPanel('#multiverseFilter')">Clear</button>
+                    </div>
+                  </div>
+                  <div class="multiverse-checkboxes"></div>
+                </section>
+
+                <section class="filter-section" id="canonFilter">
+                  <div class="filter-section-header">
+                    <span>Canon</span>
+                    <div class="filter-panel-actions">
+                      <button class="filter-panel-action" type="button" onclick="selectFilterPanel('#canonFilter')">Select all</button>
+                      <button class="filter-panel-action clear-filter" type="button" onclick="clearFilterPanel('#canonFilter')">Clear</button>
+                    </div>
+                  </div>
+                  <label class="filter-chip"><input type="checkbox" value="true"><span>Canon</span></label>
+                  <label class="filter-chip"><input type="checkbox" value="false"><span>Non-Canon</span></label>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-dropdown sort-dropdown">
+            <button class="filter-pill sort-filter-pill" id="sortFilterBtn" type="button" aria-label="View: Old to New">
+              <span class="btn-label">View</span>
+              <span class="sort-summary" aria-hidden="true">Old → New</span>
+              <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,3 5,7 8,3"/></svg>
+            </button>
+            <div class="filter-dropdown-panel sort-dropdown-panel hidden" id="sortFilter">
+              <label class="pill-toggle option-toggle">
+                <input type="checkbox" id="hideWatched">
+                <span>Hide watched</span>
+              </label>
+              <div class="sort-panel-section">
+                <span class="sort-panel-label">Direction</span>
+                <div class="sort-segment" role="group" aria-label="Sort direction">
+                  <button class="sort-segment-option" type="button" data-sort-direction="asc" aria-pressed="true">Old → New</button>
+                  <button class="sort-segment-option" type="button" data-sort-direction="desc" aria-pressed="false">New → Old</button>
+                </div>
+              </div>
+              <div class="sort-panel-section density-section">
+                <span class="sort-panel-label">View</span>
+                <div class="view-toggle option-view-toggle" role="group" aria-label="View density">
+                  <button class="view-toggle-option" type="button" data-view-mode="comfortable" aria-pressed="true">Comfortable</button>
+                  <button class="view-toggle-option" type="button" data-view-mode="compact" aria-pressed="false">Compact</button>
+                  <button class="view-toggle-option" type="button" data-view-mode="list" aria-pressed="false">List</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button id="clearAllBtn" class="clear-all-btn" hidden>
+            <span class="clear-label-full">Clear filters</span>
+            <span class="clear-label-short">Clear</span>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <div id="list"></div>
     <section id="printView" class="print-view" aria-hidden="true"></section>
@@ -367,6 +368,21 @@
         <button id="applyCodeBtn" class="progress-modal-btn">Apply</button>
       </div>
     </div>
+  </div>
+
+  <button id="floatingProgressPill" class="floating-progress-pill" aria-label="Watch Progress" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
+    <span class="floating-pill-icon">⏳</span>
+    <span class="floating-pill-percent" id="floating-pill-percent">0%</span>
+    <span class="floating-pill-separator">•</span>
+    <span class="floating-pill-time" id="floating-pill-time">0h remaining</span>
+  </button>
+
+  <div id="floatingNextUpPill" class="floating-next-up-pill" aria-label="Next Up Title">
+    <div class="floating-next-content" id="floating-next-content">
+      <span class="floating-next-icon" id="floating-next-icon">🎯</span>
+      <span class="floating-next-title" id="floating-next-title">Next Up</span>
+    </div>
+    <button class="floating-next-check" id="floating-next-check" type="button" aria-label="Mark Watched">✓</button>
   </div>
 
   <script src="data.js"></script>
