@@ -65,11 +65,13 @@ function matchesJourney(item, journey) {
       show.includes("iron man") || show.includes("stark") || show.includes("haztech") || show.includes("iron patriot") ||
       id.includes("iron_man") || id.includes("stark") || id.includes("haztech") || id.includes("iron_patriot") ||
       title.includes("homecoming") || id.includes("homecoming") ||
+      title.includes("far from home") || id.includes("far_from_home") ||
       title.includes("civil war") || id.includes("civil_war") ||
-      title.includes("avengers") || id.includes("avengers") ||
-      title.includes("ultron") || id.includes("ultron") ||
-      title.includes("infinity war") || id.includes("infinity_war") ||
-      title.includes("endgame") || id.includes("endgame")
+      id.includes("ironheart") || show.includes("ironheart") || title.includes("ironheart") ||
+      id.includes("armor_wars") || title.includes("armor wars") ||
+      id.includes("the_consultant") || id.includes("the_incredible_hulk") ||
+      id.includes("avengers") || id.includes("avengers_age_of_ultron") || 
+      id.includes("avengers_infinity_war") || id.includes("avengers_endgame")
     );
   }
   
@@ -78,11 +80,13 @@ function matchesJourney(item, journey) {
       title.includes("captain america") || title.includes("first avenger") || title.includes("falcon") ||
       show.includes("captain america") || show.includes("first avenger") || show.includes("falcon") ||
       id.includes("captain_america") || id.includes("first_avenger") || id.includes("falcon") ||
-      title.includes("civil war") || id.includes("civil_war") ||
-      title.includes("avengers") || id.includes("avengers") ||
-      title.includes("ultron") || id.includes("ultron") ||
-      title.includes("infinity war") || id.includes("infinity_war") ||
-      title.includes("endgame") || id.includes("endgame")
+      title.includes("winter soldier") || id.includes("winter_soldier") ||
+      title.includes("bucky") || id.includes("bucky") ||
+      title.includes("captain carter") || id.includes("captain_carter") ||
+      id.includes("agent_carter") || title.includes("agent carter") || show.includes("agent carter") ||
+      id.includes("avengers") || id.includes("avengers_age_of_ultron") || 
+      id.includes("avengers_infinity_war") || id.includes("avengers_endgame") ||
+      id.includes("captain_america_civil_war") || id.includes("rappin_with_captain_america")
     );
   }
   
@@ -91,10 +95,11 @@ function matchesJourney(item, journey) {
       title.includes("thor") || title.includes("loki") || title.includes("ragnarok") || title.includes("lightning") ||
       show.includes("thor") || show.includes("loki") || show.includes("ragnarok") || show.includes("lightning") ||
       id.includes("thor") || id.includes("loki") || id.includes("ragnarok") || id.includes("lightning") ||
-      title.includes("avengers") || id.includes("avengers") ||
-      title.includes("ultron") || id.includes("ultron") ||
-      title.includes("infinity war") || id.includes("infinity_war") ||
-      title.includes("endgame") || id.includes("endgame")
+      title.includes("hela") || id.includes("hela") ||
+      title.includes("asgard") || id.includes("asgard") ||
+      id.includes("team_darryl") || id.includes("thor_is_fine_guys") ||
+      id.includes("avengers") || id.includes("avengers_age_of_ultron") || 
+      id.includes("avengers_infinity_war") || id.includes("avengers_endgame")
     );
   }
   
@@ -103,11 +108,14 @@ function matchesJourney(item, journey) {
       title.includes("wandavision") || title.includes("agatha") || title.includes("multiverse of madness") ||
       show.includes("wandavision") || show.includes("agatha") || show.includes("multiverse of madness") ||
       id.includes("wandavision") || id.includes("agatha") || id.includes("multiverse_of_madness") ||
-      title.includes("ultron") || id.includes("ultron") ||
-      title.includes("civil war") || id.includes("civil_war") ||
-      title.includes("avengers") || id.includes("avengers") ||
-      title.includes("infinity war") || id.includes("infinity_war") ||
-      title.includes("endgame") || id.includes("endgame")
+      title.includes("visionquest") || show.includes("visionquest") || id.includes("vision_quest") ||
+      (/\bvision\b/.test(title) && !id.includes("television") && !id.includes("division")) ||
+      (/\bvision\b/.test(show) && !id.includes("television") && !id.includes("division")) ||
+      (/\bvision\b/.test(id.replace(/_/g, " ")) && !id.includes("television") && !id.includes("division")) ||
+      id.includes("avengers_age_of_ultron") || id.includes("avengers_infinity_war") || 
+      id.includes("avengers_endgame") || id.includes("captain_america_civil_war") ||
+      id.includes("what_if_s1_e5") || id.includes("what_if_s1_e8") || id.includes("what_if_s1_e9") || 
+      id.includes("what_if_s2_e8") || id.includes("what_if_s3_e1") || id.includes("what_if_s3_e2")
     );
   }
   
@@ -115,14 +123,55 @@ function matchesJourney(item, journey) {
     return (
       id.includes("captain_america_the_first_avenger") ||
       id.includes("captain_marvel") ||
-      id.includes("the_consultant") ||
-      (id.includes("avengers") && !id.includes("age_of_ultron") && !id.includes("endgame") && !id.includes("infinity_war")) ||
+      id.includes("avengers") ||
       id.includes("thor_the_dark_world") ||
       id.includes("thor_ragnarok") ||
       id.includes("avengers_infinity_war") ||
-      id.includes("loki") ||
-      title.includes("tesseract") ||
-      id.includes("tesseract")
+      id.includes("avengers_endgame") || 
+      id.includes("what_if_s1_e1") || 
+      id.includes("what_if_s2_e6") ||
+      id.includes("loki") || show.includes("loki") || title.includes("tesseract") || id.includes("tesseract")
+    );
+  }
+
+  if (journey === "spiderman") {
+    return (
+      title.includes("spider-man") || title.includes("spider-noir") || title.includes("spider-verse") || title.includes("spiderverse") ||
+      show.includes("spider-man") || show.includes("spider-noir") || show.includes("spider-verse") || show.includes("spiderverse") ||
+      id.includes("spider_man") || id.includes("spider_noir") || id.includes("spider_verse") || id.includes("spiderverse") ||
+      title.includes("peter parker") || title.includes("miles morales") || title.includes("gwen stacy") ||
+      title.includes("homecoming") || id.includes("homecoming") ||
+      title.includes("far from home") || id.includes("far_from_home") ||
+      title.includes("no way home") || id.includes("no_way_home") ||
+      id.includes("captain_america_civil_war") || id.includes("avengers_infinity_war") || 
+      id.includes("avengers_endgame") || id.includes("what_if_s1_e5") || id.includes("what_if_s1_e9")
+    );
+  }
+
+  if (journey === "guardians") {
+    return (
+      title.includes("guardians of the galaxy") || title.includes("star-lord") || title.includes("gamora") || title.includes("drax") || title.includes("rocket") || title.includes("groot") || title.includes("mantis") || title.includes("nebula") ||
+      show.includes("guardians of the galaxy") || show.includes("star-lord") || show.includes("gamora") || show.includes("drax") || show.includes("rocket") || show.includes("groot") || show.includes("mantis") || show.includes("nebula") ||
+      id.includes("guardians") || id.includes("star_lord") || id.includes("gamora") || id.includes("drax") || id.includes("rocket") || id.includes("groot") || id.includes("mantis") || id.includes("nebula") ||
+      title.includes("ravager") || id.includes("ravager") ||
+      title.includes("awesome mix") || title.includes("yondu") || id.includes("yondu") ||
+      title.includes("cosmo") || id.includes("cosmo") ||
+      id.includes("holiday_special") || title.includes("holiday special") ||
+      id.includes("avengers_infinity_war") || id.includes("avengers_endgame") || 
+      id.includes("thor_love_and_thunder") ||
+      id.includes("what_if_s1_e2") || id.includes("what_if_s2_e1") || id.includes("what_if_s2_e2")
+    );
+  }
+
+  if (journey === "strange") {
+    return (
+      title.includes("doctor strange") || title.includes("strange supreme") || title.includes("eye of agamotto") || title.includes("kamara-taj") || title.includes("wong") || title.includes("ancient one") || title.includes("clea") || title.includes("dormammu") ||
+      show.includes("doctor strange") || show.includes("strange supreme") || show.includes("eye of agamotto") || show.includes("kamara-taj") || show.includes("wong") || show.includes("ancient one") || show.includes("clea") || show.includes("dormammu") ||
+      id.includes("doctor_strange") || id.includes("strange_supreme") || id.includes("eye_of_agamotto") || id.includes("kamara_taj") || id.includes("wong") || id.includes("ancient_one") || id.includes("clea") || id.includes("dormammu") ||
+      title.includes("multiverse of madness") || id.includes("multiverse_of_madness") ||
+      title.includes("no way home") || id.includes("no_way_home") ||
+      id.includes("avengers_infinity_war") || id.includes("avengers_endgame") || 
+      id.includes("thor_ragnarok") || id.includes("what_if_s1_e4") || id.includes("what_if_s2_e9")
     );
   }
   
@@ -1646,6 +1695,9 @@ function initJourneyTracker() {
     cap: { color: "#5ab2ff", soft: "rgba(90, 178, 255, 0.35)", softBg: "rgba(90, 178, 255, 0.12)" },
     thor: { color: "#ff9f1c", soft: "rgba(255, 159, 28, 0.35)", softBg: "rgba(255, 159, 28, 0.12)" },
     wanda: { color: "#9d4edd", soft: "rgba(157, 78, 221, 0.35)", softBg: "rgba(157, 78, 221, 0.12)" },
+    spiderman: { color: "#ff2a2a", soft: "rgba(255, 42, 42, 0.35)", softBg: "rgba(255, 42, 42, 0.12)" },
+    guardians: { color: "#06b6d4", soft: "rgba(6, 182, 212, 0.35)", softBg: "rgba(6, 182, 212, 0.12)" },
+    strange: { color: "#ff7a00", soft: "rgba(255, 122, 0, 0.35)", softBg: "rgba(255, 122, 0, 0.12)" },
     tesseract: { color: "#2ec4b6", soft: "rgba(46, 196, 182, 0.35)", softBg: "rgba(46, 196, 182, 0.12)" }
   };
 
@@ -1692,6 +1744,9 @@ function initJourneyTracker() {
           cap: "Captain America",
           thor: "Thor",
           wanda: "Scarlet Witch",
+          spiderman: "Spider-Man",
+          guardians: "Guardians of the Galaxy",
+          strange: "Doctor Strange",
           tesseract: "Tesseract"
         };
         const jName = journeyNames[activeJourney] || "Journey";
@@ -1776,6 +1831,9 @@ function updateNextUpBanner(data) {
         cap: "Captain America's Journey",
         thor: "Thor's Journey",
         wanda: "Scarlet Witch's Journey",
+        spiderman: "Spider-Man's Journey",
+        guardians: "Guardians of the Galaxy's Journey",
+        strange: "Doctor Strange's Journey",
         tesseract: "Space Stone (Tesseract) Journey"
       };
       const jName = journeyNames[activeJourney] || "this Journey";
@@ -1807,6 +1865,9 @@ function updateNextUpBanner(data) {
       cap: "🛰️ NEXT UP IN CAPTAIN AMERICA'S JOURNEY",
       thor: "🛰️ NEXT UP IN THOR'S JOURNEY",
       wanda: "🛰️ NEXT UP IN SCARLET WITCH'S JOURNEY",
+      spiderman: "🛰️ NEXT UP IN SPIDER-MAN'S JOURNEY",
+      guardians: "🛰️ NEXT UP IN GUARDIANS OF THE GALAXY'S JOURNEY",
+      strange: "🛰️ NEXT UP IN DOCTOR STRANGE'S JOURNEY",
       tesseract: "🛰️ NEXT UP IN TESSERACT'S JOURNEY"
     };
     tagLabel = journeyLabels[activeJourney] || "🛰️ NEXT UP IN JOURNEY";
