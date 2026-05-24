@@ -244,7 +244,7 @@ body.dark .hero-bg-art {
   height: 420px;
   top: 5%;
   right: -60px;
-  background-image: url('assets/silhouettes/shield.png');
+  background-image: url('assets/silhouettes/shield.webp');
   filter: blur(1px) saturate(0.3);
   animation: heroDrift1 35s infinite alternate ease-in-out;
 }
@@ -254,7 +254,7 @@ body.dark .hero-bg-art {
   height: 380px;
   bottom: 8%;
   left: -50px;
-  background-image: url('assets/silhouettes/web.png');
+  background-image: url('assets/silhouettes/web.webp');
   filter: blur(1.5px) saturate(0.3);
   animation: heroDrift2 40s infinite alternate ease-in-out;
 }
@@ -264,7 +264,7 @@ body.dark .hero-bg-art {
   height: 300px;
   top: 40%;
   right: 5%;
-  background-image: url('assets/silhouettes/reactor.png');
+  background-image: url('assets/silhouettes/reactor.webp');
   filter: blur(0.5px) saturate(0.4);
   animation: heroDrift3 30s infinite alternate ease-in-out;
 }
@@ -272,7 +272,7 @@ body.dark .hero-bg-art {
 /* Stark Theme: Arc Reactor + Shield */
 body.dark.theme-stark .hero-bg-1 {
   opacity: 0.16;
-  background-image: url('assets/silhouettes/reactor.png');
+  background-image: url('assets/silhouettes/reactor.webp');
   filter: blur(0px) saturate(1.2) drop-shadow(0 0 25px var(--accent)) drop-shadow(0 0 5px var(--accent-secondary));
   top: 3%;
   right: -40px;
@@ -281,38 +281,38 @@ body.dark.theme-stark .hero-bg-1 {
 }
 body.dark.theme-stark .hero-bg-2 {
   opacity: 0.10;
-  background-image: url('assets/silhouettes/shield.png');
+  background-image: url('assets/silhouettes/shield.webp');
   filter: blur(0.5px) saturate(1) drop-shadow(0 0 15px var(--accent-secondary));
 }
 body.dark.theme-stark .hero-bg-3 {
   opacity: 0.06;
-  background-image: url('assets/silhouettes/mjolnir.png');
+  background-image: url('assets/silhouettes/mjolnir.webp');
   filter: blur(1px) saturate(0.8) drop-shadow(0 0 8px var(--accent));
 }
 
 /* TVA Theme: Mjolnir + Portal */
 body.dark.theme-tva .hero-bg-1 {
   opacity: 0.16;
-  background-image: url('assets/silhouettes/mjolnir.png');
+  background-image: url('assets/silhouettes/mjolnir.webp');
   filter: blur(0px) saturate(1.2) sepia(0.3) drop-shadow(0 0 25px var(--accent)) drop-shadow(0 0 5px var(--accent-secondary));
   width: 450px;
   height: 450px;
 }
 body.dark.theme-tva .hero-bg-2 {
   opacity: 0.10;
-  background-image: url('assets/silhouettes/portal.png');
+  background-image: url('assets/silhouettes/portal.webp');
   filter: blur(0.5px) saturate(1) sepia(0.2) drop-shadow(0 0 15px var(--accent-secondary));
 }
 body.dark.theme-tva .hero-bg-3 {
   opacity: 0.06;
-  background-image: url('assets/silhouettes/reactor.png');
+  background-image: url('assets/silhouettes/reactor.webp');
   filter: blur(1px) saturate(0.8) sepia(0.3) drop-shadow(0 0 8px var(--accent));
 }
 
 /* Wakanda Theme: Panther + Web */
 body.dark.theme-wakanda .hero-bg-1 {
   opacity: 0.16;
-  background-image: url('assets/silhouettes/panther.png');
+  background-image: url('assets/silhouettes/panther.webp');
   filter: blur(0px) saturate(1.2) drop-shadow(0 0 25px var(--accent)) drop-shadow(0 0 5px var(--accent-secondary));
   width: 480px;
   height: 480px;
@@ -321,19 +321,19 @@ body.dark.theme-wakanda .hero-bg-1 {
 }
 body.dark.theme-wakanda .hero-bg-2 {
   opacity: 0.10;
-  background-image: url('assets/silhouettes/web.png');
+  background-image: url('assets/silhouettes/web.webp');
   filter: blur(0.5px) saturate(1) drop-shadow(0 0 15px var(--accent-secondary));
 }
 body.dark.theme-wakanda .hero-bg-3 {
   opacity: 0.06;
-  background-image: url('assets/silhouettes/shield.png');
+  background-image: url('assets/silhouettes/shield.webp');
   filter: blur(1px) saturate(0.8) drop-shadow(0 0 8px var(--accent));
 }
 
 /* Sorcerer Theme: Portal + Reactor */
 body.dark.theme-sorcerer .hero-bg-1 {
   opacity: 0.16;
-  background-image: url('assets/silhouettes/portal.png');
+  background-image: url('assets/silhouettes/portal.webp');
   filter: blur(0px) saturate(1.2) drop-shadow(0 0 25px var(--accent)) drop-shadow(0 0 5px var(--accent-secondary));
   width: 500px;
   height: 500px;
@@ -346,19 +346,19 @@ body.dark.theme-sorcerer .hero-bg-1 {
 }
 body.dark.theme-sorcerer .hero-bg-2 {
   opacity: 0.10;
-  background-image: url('assets/silhouettes/reactor.png');
+  background-image: url('assets/silhouettes/reactor.webp');
   filter: blur(0.5px) saturate(1) drop-shadow(0 0 15px var(--accent-secondary));
 }
 body.dark.theme-sorcerer .hero-bg-3 {
   opacity: 0.06;
-  background-image: url('assets/silhouettes/mjolnir.png');
+  background-image: url('assets/silhouettes/mjolnir.webp');
   filter: blur(1px) saturate(0.8) drop-shadow(0 0 8px var(--accent));
 }
 
 /* Spider-Man Theme: Web + Shield */
 body.dark.theme-spiderman .hero-bg-1 {
   opacity: 0.16;
-  background-image: url('assets/silhouettes/web.png');
+  background-image: url('assets/silhouettes/web.webp');
   filter: blur(0px) saturate(1.2) drop-shadow(0 0 25px var(--accent)) drop-shadow(0 0 5px var(--accent-secondary));
   width: 480px;
   height: 480px;
@@ -367,19 +367,19 @@ body.dark.theme-spiderman .hero-bg-1 {
 }
 body.dark.theme-spiderman .hero-bg-2 {
   opacity: 0.10;
-  background-image: url('assets/silhouettes/shield.png');
+  background-image: url('assets/silhouettes/shield.webp');
   filter: blur(0.5px) saturate(1) drop-shadow(0 0 15px var(--accent-secondary));
 }
 body.dark.theme-spiderman .hero-bg-3 {
   opacity: 0.06;
-  background-image: url('assets/silhouettes/reactor.png');
+  background-image: url('assets/silhouettes/reactor.webp');
   filter: blur(1px) saturate(0.8) drop-shadow(0 0 8px var(--accent));
 }
 
 /* Captain America Theme: Shield + Mjolnir */
 body.dark.theme-captain .hero-bg-1 {
   opacity: 0.16;
-  background-image: url('assets/silhouettes/shield.png');
+  background-image: url('assets/silhouettes/shield.webp');
   filter: blur(0px) saturate(1.2) drop-shadow(0 0 25px var(--accent)) drop-shadow(0 0 5px var(--accent-secondary));
   width: 480px;
   height: 480px;
@@ -388,12 +388,12 @@ body.dark.theme-captain .hero-bg-1 {
 }
 body.dark.theme-captain .hero-bg-2 {
   opacity: 0.10;
-  background-image: url('assets/silhouettes/mjolnir.png');
+  background-image: url('assets/silhouettes/mjolnir.webp');
   filter: blur(0.5px) saturate(1) drop-shadow(0 0 15px var(--accent-secondary));
 }
 body.dark.theme-captain .hero-bg-3 {
   opacity: 0.06;
-  background-image: url('assets/silhouettes/reactor.png');
+  background-image: url('assets/silhouettes/reactor.webp');
   filter: blur(1px) saturate(0.8) drop-shadow(0 0 8px var(--accent));
 }
 
@@ -2196,7 +2196,7 @@ body.dark .mcu-card::after {
   right: -15px;
   width: 100px;
   height: 100px;
-  background: url('assets/hero-silhouette.png') no-repeat center center;
+  background: url('assets/hero-silhouette.webp') no-repeat center center;
   background-size: contain;
   opacity: 0.025;
   pointer-events: none;

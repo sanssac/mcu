@@ -2119,7 +2119,7 @@ function updateNextUpBanner(data) {
       const pillIcon = document.getElementById("floating-next-icon");
       if (pillIcon) {
         if (activeJourney) {
-          pillIcon.innerHTML = `<img src="assets/journeys/${activeJourney}.png" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+          pillIcon.innerHTML = `<img src="assets/journeys/${activeJourney}.webp" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
         } else {
           pillIcon.innerHTML = `🛰️`;
         }
