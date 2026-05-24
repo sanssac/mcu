@@ -584,6 +584,27 @@ async function loadData() {
     saveFilterState();
     renderList(filteredData());
   });
+
+  // Handle actions redirected from secondary pages
+  const actionParam = new URLSearchParams(window.location.search).get("action");
+  if (actionParam) {
+    setTimeout(() => {
+      if (actionParam === "print") {
+        document.getElementById("printBtn")?.click();
+      } else if (actionParam === "export") {
+        document.getElementById("exportProgressBtn")?.click();
+      } else if (actionParam === "import") {
+        document.getElementById("importProgressBtn")?.click();
+      }
+      // Clean query parameter from address bar
+      const cleanParams = new URLSearchParams(window.location.search);
+      cleanParams.delete("action");
+      const cleanUrl = `${window.location.pathname}${cleanParams.toString() ? `?${cleanParams.toString()}` : ""}${window.location.hash}`;
+      try {
+        window.history.replaceState(null, "", cleanUrl);
+      } catch (e) {}
+    }, 400);
+  }
 }
 
 function populateFilters() {
