@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#eef1f6" media="(prefers-color-scheme: light)" id="theme-color-light">
   <meta name="theme-color" content="#090b10" media="(prefers-color-scheme: dark)" id="theme-color-dark">
+  <meta name="description" content="A comprehensive Marvel Cinematic Universe watch order guide, detailing the ideal chronological and release timeline sequence for all movies, series, and short films.">
   <title>MCU Viewing Order</title>
   <meta property="og:title" content="MCU Viewing Order">
   <meta property="og:description" content="A comprehensive MCU viewing order, including movies, shows, and more.">
@@ -22,6 +23,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Background Hero Decorations -->
+  <div class="hero-bg-decorations" aria-hidden="true">
+    <canvas id="nebulaParticles"></canvas>
+    <div class="hero-bg-art hero-bg-1"></div>
+    <div class="hero-bg-art hero-bg-2"></div>
+    <div class="hero-bg-art hero-bg-3"></div>
+  </div>
+
   <div class="page-shell">
 
     <header class="topbar">
@@ -95,8 +104,10 @@
             <hr class="dropdown-separator">
             <div class="theme-picker-group">
               <span class="theme-picker-label">MCU Mood:</span>
-              <div class="theme-dot theme-dot-classic active" data-theme="classic" title="Nexus Standard"></div>
+              <div class="theme-dot theme-dot-classic active" data-theme="classic" title="Classic Nexus"></div>
               <div class="theme-dot theme-dot-stark" data-theme="stark" title="Stark Tech"></div>
+              <div class="theme-dot theme-dot-captain" data-theme="captain" title="Super Soldier"></div>
+              <div class="theme-dot theme-dot-spiderman" data-theme="spiderman" title="Web Slinger"></div>
               <div class="theme-dot theme-dot-tva" data-theme="tva" title="TVA Chronicle"></div>
               <div class="theme-dot theme-dot-wakanda" data-theme="wakanda" title="Wakanda Vibranium"></div>
               <div class="theme-dot theme-dot-sorcerer" data-theme="sorcerer" title="Sorcerer Supreme"></div>
@@ -370,11 +381,28 @@
     </div>
   </div>
 
+  <div id="floatingThemePill" class="floating-theme-pill" aria-label="MCU Mood Selector">
+    <button class="floating-theme-content" id="floating-theme-content" type="button" aria-expanded="false" aria-controls="floatingThemeDropdown">
+      <span class="floating-theme-emoji" id="floating-theme-emoji">🌌</span>
+      <span class="floating-theme-title" id="floating-theme-title">Classic Nexus</span>
+      <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,3 5,7 8,3"/></svg>
+    </button>
+    <div id="floatingThemeDropdown" class="floating-theme-dropdown hidden">
+      <div class="theme-picker-group-floating">
+        <div class="theme-dot theme-dot-classic" data-theme="classic" title="Classic Nexus"></div>
+        <div class="theme-dot theme-dot-stark" data-theme="stark" title="Stark Tech"></div>
+        <div class="theme-dot theme-dot-captain" data-theme="captain" title="Super Soldier"></div>
+        <div class="theme-dot theme-dot-spiderman" data-theme="spiderman" title="Web Slinger"></div>
+        <div class="theme-dot theme-dot-tva" data-theme="tva" title="TVA Chronicle"></div>
+        <div class="theme-dot theme-dot-wakanda" data-theme="wakanda" title="Wakanda Vibranium"></div>
+        <div class="theme-dot theme-dot-sorcerer" data-theme="sorcerer" title="Sorcerer Supreme"></div>
+      </div>
+    </div>
+  </div>
+
   <button id="floatingProgressPill" class="floating-progress-pill" aria-label="Watch Progress" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
     <span class="floating-pill-icon">⏳</span>
     <span class="floating-pill-percent" id="floating-pill-percent">0%</span>
-    <span class="floating-pill-separator">•</span>
-    <span class="floating-pill-time" id="floating-pill-time">0h remaining</span>
   </button>
 
   <div id="floatingNextUpPill" class="floating-next-up-pill" aria-label="Next Up Title">

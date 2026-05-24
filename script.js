@@ -537,10 +537,15 @@ async function loadData() {
 
   const searchInput = document.getElementById("search");
   const searchClear = document.getElementById("searchClear");
-  searchInput.addEventListener("input", () => {
-    searchClear.hidden = searchInput.value === "";
+  
+  const debouncedSearch = debounce(() => {
     saveFilterState();
     renderList(filteredData());
+  }, 150);
+
+  searchInput.addEventListener("input", () => {
+    searchClear.hidden = searchInput.value === "";
+    debouncedSearch();
   });
   searchClear.addEventListener("click", () => {
     searchInput.value = "";
@@ -568,6 +573,8 @@ async function loadData() {
   initFloatingProgressPill();
   initJourneyTracker();
   initTimelineCanvas();
+  initFloatingThemePill();
+  initNebulaParticles();
 
   document.getElementById("clearAllBtn").addEventListener("click", () => {
     document.querySelectorAll(
@@ -1459,8 +1466,18 @@ function toggleTheme() {
   applyTheme(current === "dark" ? "light" : "dark");
 }
 
+const THEME_DETAILS = {
+  classic: { name: "Classic Nexus", emoji: "🌌" },
+  stark: { name: "Stark Tech", emoji: "🦾" },
+  captain: { name: "Super Soldier", emoji: "🛡️" },
+  spiderman: { name: "Web Slinger", emoji: "🕸️" },
+  tva: { name: "TVA Chronicle", emoji: "⏳" },
+  wakanda: { name: "Wakanda Vibranium", emoji: "🐾" },
+  sorcerer: { name: "Sorcerer Supreme", emoji: "🔮" }
+};
+
 function applyMoodTheme(mood) {
-  document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer");
+  document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer", "theme-captain", "theme-spiderman");
   if (mood && mood !== "classic") {
     document.body.classList.add(`theme-${mood}`);
     if (!document.body.classList.contains("dark")) {
@@ -1468,9 +1485,18 @@ function applyMoodTheme(mood) {
     }
   }
   localStorage.setItem("mcu_mood_theme", mood);
+  
+  // Update all dot states
   document.querySelectorAll(".theme-dot").forEach(dot => {
     dot.classList.toggle("active", dot.getAttribute("data-theme") === mood);
   });
+
+  // Sync floating switcher pill text and emoji
+  const details = THEME_DETAILS[mood] || THEME_DETAILS.classic;
+  const emojiEl = document.getElementById("floating-theme-emoji");
+  const titleEl = document.getElementById("floating-theme-title");
+  if (emojiEl) emojiEl.textContent = details.emoji;
+  if (titleEl) titleEl.textContent = details.name;
 }
 
 const savedMood = localStorage.getItem("mcu_mood_theme") || "classic";
@@ -1637,7 +1663,204 @@ function initDashboard() {
       localStorage.setItem("mcu_dashboard_collapsed", "true");
     }
   });
+
+  // Bind click events to all badges
+  document.querySelectorAll(".mcu-badge").forEach(badge => {
+    badge.addEventListener("click", () => {
+      const badgeId = badge.id;
+      showBadgeDetails(badgeId);
+    });
+  });
 }
+
+function showBadgeDetails(badgeId) {
+  // 1. Data mapping for badges
+  const badgeMap = {
+    "badge-iron-man": {
+      name: "Iron Man Initiate",
+      icon: "🛡️",
+      criteriaText: "Watch the first 3 chronological MCU titles: Captain America: The First Avenger, Captain Marvel, and Iron Man.",
+      type: "checklist",
+      items: ["captain_america_the_first_avenger", "captain_marvel", "iron_man"]
+    },
+    "badge-avengers": {
+      name: "Avenger Assembled",
+      icon: "⚡",
+      criteriaText: "Watch all core Avengers team-up films: The Avengers, Avengers: Age of Ultron, Avengers: Infinity War, and Avengers: Endgame.",
+      type: "checklist",
+      items: ["avengers", "avengers_age_of_ultron", "avengers_infinity_war", "avengers_endgame"]
+    },
+    "badge-multiverse": {
+      name: "Multiverse Walker",
+      icon: "🔮",
+      criteriaText: "Explore the Multiverse by watching 5 or more non-Earth-616 timeline entries.",
+      type: "progress",
+      filterFn: item => item.multiverse !== 0,
+      targetCount: 5
+    },
+    "badge-tva": {
+      name: "TVA Agent",
+      icon: "⏳",
+      criteriaText: "Fully complete Phase 4 (where the Multiverse Saga begins).",
+      type: "progress",
+      filterFn: item => getItemPhase(item) === "Phase 4"
+    },
+    "badge-infinity": {
+      name: "Infinity Conqueror",
+      icon: "🌟",
+      criteriaText: "Fully complete Phases 1, 2, and 3 (The complete Infinity Saga).",
+      type: "progress",
+      filterFn: item => ["Phase 1", "Phase 2", "Phase 3"].includes(getItemPhase(item))
+    },
+    "badge-watcher": {
+      name: "Ultimate Watcher",
+      icon: "🛸",
+      criteriaText: "Watch 100% of all entries in the timeline database!",
+      type: "progress",
+      filterFn: item => true
+    }
+  };
+
+  const badge = badgeMap[badgeId];
+  if (!badge) return;
+
+  // Remove existing modal if any
+  const existingModal = document.getElementById("badgeDetailModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  // Calculate status
+  let unlocked = false;
+  let progressHtml = "";
+
+  if (badge.type === "checklist") {
+    // Check watched status for all checklist items
+    const checklistData = badge.items.map(id => {
+      const item = fullData.find(d => d.id === id);
+      const title = item ? getDisplayTitle(item) : id;
+      const isWatched = localStorage.getItem("watched_" + id) === "true";
+      return { title, isWatched };
+    });
+
+    unlocked = checklistData.every(c => c.isWatched);
+
+    const checklistItemsHtml = checklistData.map(c => `
+      <div class="checklist-item ${c.isWatched ? 'checked' : 'locked'}">
+        <span class="chk-status">${c.isWatched ? '✅' : '🔒'}</span>
+        <span>${c.title}</span>
+      </div>
+    `).join("");
+
+    progressHtml = `
+      <div class="badge-detail-progress-card">
+        <h4>Required Items Checklist</h4>
+        <div class="badge-modal-checklist">
+          ${checklistItemsHtml}
+        </div>
+      </div>
+    `;
+  } else if (badge.type === "progress") {
+    // Count stats
+    const qualifyingItems = fullData.filter(badge.filterFn);
+    const watchedQualifying = qualifyingItems.filter(item => localStorage.getItem("watched_" + item.id) === "true");
+
+    const totalCount = badge.targetCount !== undefined ? badge.targetCount : qualifyingItems.length;
+    const watchedCount = watchedQualifying.length;
+    
+    // Check unlock
+    if (badge.targetCount !== undefined) {
+      unlocked = watchedCount >= badge.targetCount;
+    } else {
+      unlocked = totalCount > 0 && watchedCount === totalCount;
+    }
+
+    const percent = totalCount ? Math.min(Math.round((watchedCount / totalCount) * 100), 100) : 0;
+
+    // Compile recently/qualifying watched items (up to 5)
+    const recentWatchedHtml = watchedQualifying.slice(-5).reverse().map(item => `
+      <div class="recent-item" title="${getDisplayTitle(item)}">✓ ${getDisplayTitle(item)}</div>
+    `).join("") || `<div class="recent-item" style="font-style: italic; opacity: 0.6;">No qualifying entries watched yet.</div>`;
+
+    progressHtml = `
+      <div class="badge-detail-progress-card">
+        <h4>Progress</h4>
+        <div class="badge-modal-progress-section">
+          <div class="badge-modal-progress-label">
+            <span>Completion</span>
+            <span>${watchedCount} / ${totalCount} (${percent}%)</span>
+          </div>
+          <div class="badge-modal-progress-bar">
+            <div class="badge-modal-progress-fill" style="width: ${percent}%"></div>
+          </div>
+          <div class="badge-modal-sub-label">Qualifying Watched Items</div>
+          <div class="badge-modal-recent-list">
+            ${recentWatchedHtml}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Create modal element
+  const modal = document.createElement("div");
+  modal.className = "badge-detail-modal";
+  modal.id = "badgeDetailModal";
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-modal", "true");
+
+  modal.innerHTML = `
+    <div class="badge-detail-backdrop"></div>
+    <div class="badge-detail-box">
+      <button class="badge-detail-close" aria-label="Close modal">&times;</button>
+      <div class="badge-detail-header">
+        <div class="badge-detail-icon-glow ${unlocked ? 'unlocked' : ''}">${badge.icon}</div>
+        <h3 class="badge-detail-name">${badge.name}</h3>
+        <span class="badge-detail-status-pill ${unlocked ? 'status-unlocked' : 'status-locked'}">
+          ${unlocked ? '🔓 Unlocked' : '🔒 Locked'}
+        </span>
+      </div>
+      <div class="badge-detail-body">
+        <div class="badge-detail-criteria-card">
+          <h4>Unlock Criteria</h4>
+          <p>${badge.criteriaText}</p>
+        </div>
+        ${progressHtml}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Trigger browser paint to transition in
+  requestAnimationFrame(() => {
+    modal.classList.add("active");
+  });
+
+  // Closing animation and removal
+  const closeModal = () => {
+    modal.classList.remove("active");
+    // Wait for transition to complete before removing from DOM
+    modal.addEventListener("transitionend", function handler(e) {
+      if (e.propertyName === "opacity") {
+        modal.removeEventListener("transitionend", handler);
+        modal.remove();
+      }
+    }, { once: true });
+    
+    // Safety fallback in case transitionend fails
+    setTimeout(() => {
+      if (modal.parentNode) {
+        modal.remove();
+      }
+    }, 400);
+  };
+
+  // Bind close triggers
+  modal.querySelector(".badge-detail-close").addEventListener("click", closeModal);
+  modal.querySelector(".badge-detail-backdrop").addEventListener("click", closeModal);
+}
+
 
 function initScrollMap() {
   const needle = document.getElementById("scrollMapNeedle");
@@ -1698,19 +1921,48 @@ function initScrollMap() {
 
 function initFloatingProgressPill() {
   const floatingPill = document.getElementById("floatingProgressPill");
+  const themePill = document.getElementById("floatingThemePill");
   if (!floatingPill) return;
 
   // Initial update
   updateStats();
 
-  window.addEventListener("scroll", () => {
+  const handleScroll = () => {
+    if (window.innerWidth <= 820) {
+      if (themePill) themePill.style.right = ""; // Let CSS handle mobile layout
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      if (scrollTop > 250) {
+        floatingPill.classList.add("visible");
+      } else {
+        floatingPill.classList.remove("visible");
+      }
+      return;
+    }
+
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     if (scrollTop > 250) {
       floatingPill.classList.add("visible");
+      if (themePill) {
+        const progressWidth = floatingPill.getBoundingClientRect().width || 60;
+        themePill.style.right = `${24 + progressWidth + 12}px`;
+      }
     } else {
       floatingPill.classList.remove("visible");
+      if (themePill) {
+        themePill.style.right = "24px";
+      }
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  window.addEventListener("resize", () => {
+    if (window.innerWidth <= 820 && themePill) {
+      themePill.style.right = "";
+    } else {
+      handleScroll();
     }
   });
+  handleScroll(); // Initial check
 }
 
 function initJourneyTracker() {
@@ -2133,10 +2385,135 @@ function initTimelineCanvas() {
   requestAnimationFrame(animate);
 }
 
+function initNebulaParticles() {
+  const canvas = document.getElementById("nebulaParticles");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  
+  let width = (canvas.width = window.innerWidth);
+  let height = (canvas.height = window.innerHeight);
+  
+  window.addEventListener("resize", () => {
+    width = (canvas.width = window.innerWidth);
+    height = (canvas.height = window.innerHeight);
+  });
+  
+  const particles = [];
+  const numParticles = 40;
+  
+  for (let i = 0; i < numParticles; i++) {
+    particles.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      size: 2 + Math.random() * 4,
+      speedX: (Math.random() - 0.5) * 0.3,
+      speedY: -0.15 - Math.random() * 0.25,
+      alpha: 0.15 + Math.random() * 0.35,
+      pulseSpeed: 0.005 + Math.random() * 0.015,
+      pulsePhase: Math.random() * Math.PI
+    });
+  }
+  
+  function getThemeColors() {
+    const style = getComputedStyle(document.body);
+    const accent = style.getPropertyValue("--accent").trim() || "#818cf8";
+    const accentSec = style.getPropertyValue("--accent-secondary").trim() || "#f472b6";
+    return { accent, accentSec };
+  }
+  
+  let colors = getThemeColors();
+  setInterval(() => {
+    colors = getThemeColors();
+  }, 1000);
+  
+  let isTabActive = true;
+  document.addEventListener("visibilitychange", () => {
+    isTabActive = !document.hidden;
+  });
+  
+  function animate() {
+    if (!isTabActive) {
+      requestAnimationFrame(animate);
+      return;
+    }
+    
+    ctx.clearRect(0, 0, width, height);
+    
+    particles.forEach(p => {
+      p.x += p.speedX;
+      p.y += p.speedY;
+      
+      if (p.x < 0) p.x = width;
+      if (p.x > width) p.x = 0;
+      if (p.y < 0) p.y = height;
+      if (p.y > height) p.y = 0;
+      
+      p.pulsePhase += p.pulseSpeed;
+      const currentAlpha = p.alpha + Math.sin(p.pulsePhase) * 0.12;
+      const useSecColor = p.size > 4.2;
+      
+      ctx.beginPath();
+      ctx.globalAlpha = Math.max(0.02, Math.min(0.65, currentAlpha));
+      
+      const color = useSecColor ? colors.accentSec : colors.accent;
+      ctx.fillStyle = color;
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = color;
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1.0;
+    requestAnimationFrame(animate);
+  }
+  
+  animate();
+}
+
+function initFloatingThemePill() {
+  const pillContent = document.getElementById("floating-theme-content");
+  const dropdown = document.getElementById("floatingThemeDropdown");
+  const floatingPill = document.getElementById("floatingThemePill");
+  
+  if (!pillContent || !dropdown || !floatingPill) return;
+  
+  pillContent.addEventListener("click", event => {
+    event.stopPropagation();
+    const isHidden = dropdown.classList.toggle("hidden");
+    pillContent.setAttribute("aria-expanded", String(!isHidden));
+  });
+  
+  dropdown.addEventListener("click", event => {
+    event.stopPropagation();
+  });
+  
+  document.addEventListener("click", () => {
+    dropdown.classList.add("hidden");
+    pillContent.setAttribute("aria-expanded", "false");
+  });
+  
+  dropdown.querySelectorAll(".theme-dot").forEach(dot => {
+    dot.addEventListener("click", () => {
+      applyMoodTheme(dot.getAttribute("data-theme"));
+      dropdown.classList.add("hidden");
+      pillContent.setAttribute("aria-expanded", "false");
+    });
+  });
+}
+
 window.addEventListener("beforeprint", preparePrintView);
 window.addEventListener("afterprint", () => {
   document.body.classList.remove("print-mode");
   document.getElementById("printView")?.setAttribute("aria-hidden", "true");
 });
+
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
 
 loadData();

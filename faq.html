@@ -4,7 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#eef1f6" id="theme-color-meta">
+  <meta name="description" content="Find answers to frequently asked questions about the Marvel Cinematic Universe viewing orders, timeline chronological logic, and canon status details.">
   <title>FAQ — MCU Nexus</title>
+  <meta property="og:title" content="MCU Nexus — Frequently Asked Questions">
+  <meta property="og:description" content="Get clarifications on chronological logic, multiverse crossovers, and canon timelines in the MCU.">
+  <meta property="og:image" content="mcu-embed.png">
+  <meta property="og:url" content="./faq.html">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
   <script>(function(){var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark');})()</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -137,6 +144,13 @@
   </style>
 </head>
 <body>
+  <!-- Background Hero Decorations -->
+  <div class="hero-bg-decorations" aria-hidden="true">
+    <div class="hero-bg-art hero-bg-1"></div>
+    <div class="hero-bg-art hero-bg-2"></div>
+    <div class="hero-bg-art hero-bg-3"></div>
+  </div>
+
   <div class="page-shell">
 
     <header class="topbar">
@@ -188,8 +202,10 @@
             <hr class="dropdown-separator">
             <div class="theme-picker-group">
               <span class="theme-picker-label">MCU Mood:</span>
-              <div class="theme-dot theme-dot-classic active" data-theme="classic" title="Nexus Standard"></div>
+              <div class="theme-dot theme-dot-classic active" data-theme="classic" title="Classic Nexus"></div>
               <div class="theme-dot theme-dot-stark" data-theme="stark" title="Stark Tech"></div>
+              <div class="theme-dot theme-dot-captain" data-theme="captain" title="Super Soldier"></div>
+              <div class="theme-dot theme-dot-spiderman" data-theme="spiderman" title="Web Slinger"></div>
               <div class="theme-dot theme-dot-tva" data-theme="tva" title="TVA Chronicle"></div>
               <div class="theme-dot theme-dot-wakanda" data-theme="wakanda" title="Wakanda Vibranium"></div>
               <div class="theme-dot theme-dot-sorcerer" data-theme="sorcerer" title="Sorcerer Supreme"></div>
@@ -433,7 +449,7 @@
     });
 
     function applyMoodTheme(mood) {
-      document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer");
+      document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer", "theme-captain", "theme-spiderman");
       if (mood && mood !== "classic") {
         document.body.classList.add(`theme-${mood}`);
         if (!document.body.classList.contains("dark")) {
