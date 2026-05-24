@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#eef1f6" id="theme-color-meta">
+  <meta name="description" content="Documenting additions, removals, and improvements to the MCU Nexus viewing tracker and GitHub repository.">
+  <title>Changelog — MCU Nexus</title>
+  <meta property="og:title" content="MCU Nexus — Changelog">
+  <meta property="og:description" content="Explore interactive logs of timeline additions, removals, updates, and feature improvements.">
+  <meta property="og:image" content="mcu-embed.png">
+  <meta property="og:url" content="./changelog.html">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
+  <script>(function(){var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark');})()</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .changelog-controls-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Hero Decorations -->
+  <div class="hero-bg-decorations" aria-hidden="true">
+    <div class="hero-bg-art hero-bg-1"></div>
+    <div class="hero-bg-art hero-bg-2"></div>
+    <div class="hero-bg-art hero-bg-3"></div>
+  </div>
+
+  <div class="page-shell">
+
+    <header class="topbar">
+      <div class="brand">
+        <a href="index.html" class="brand-mark" aria-label="MCU Nexus Home">
+          <svg class="arc-logo-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle class="arc-ring-outer" cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle class="arc-ring-inner" cx="16" cy="16" r="10" stroke="currentColor" stroke-width="1" stroke-dasharray="10 4"/>
+            <polygon class="arc-core" points="16,10 22,20 10,20" fill="currentColor"/>
+            <circle cx="16" cy="16" r="2.5" fill="#ffffff" />
+          </svg>
+        </a>
+        <a href="index.html" class="brand-text-link"><span class="brand-text">
+          <strong>MCU Nexus</strong>
+        </span></a>
+      </div>
+      <nav class="topbar-nav" aria-label="Primary">
+        <a href="index.html">Viewing Order</a>
+        <a href="upcoming.html">Upcoming</a>
+        <a href="shows.html">Show Status</a>
+        <a href="faq.html">FAQ</a>
+      </nav>
+      <div class="topbar-actions">
+        <div class="menu-toggle">
+          <button id="hamburger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="dropdown">
+            <svg id="hamburger-icon" class="hamburger-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+              <line x1="2" y1="4.5" x2="14" y2="4.5"/>
+              <line x1="2" y1="8" x2="14" y2="8"/>
+              <line x1="2" y1="11.5" x2="14" y2="11.5"/>
+            </svg>
+          </button>
+          <div id="dropdown" class="dropdown hidden">
+            <a href="index.html">
+              <img src="assets/menubar/home.svg" class="dropdown-icon" alt="">
+              <span>Viewing Order</span>
+            </a>
+            <a href="upcoming.html">
+              <img src="assets/menubar/articles.svg" class="dropdown-icon" alt="">
+              <span>Upcoming</span>
+            </a>
+            <a href="shows.html">
+              <img src="assets/menubar/products.svg" class="dropdown-icon" alt="">
+              <span>Show Status</span>
+            </a>
+            <a href="faq.html">
+              <img src="assets/menubar/faq.svg" class="dropdown-icon" alt="">
+              <span>FAQ</span>
+            </a>
+            <a href="changelog.html" aria-current="page">
+              <img src="assets/menubar/changelog.svg" class="dropdown-icon" alt="">
+              <span>Changelog</span>
+            </a>
+            <hr class="dropdown-separator">
+            <div class="theme-picker-group">
+              <span class="theme-picker-label">MCU Mood:</span>
+              <div class="theme-dot theme-dot-classic active" data-theme="classic" title="Classic Nexus"></div>
+              <div class="theme-dot theme-dot-stark" data-theme="stark" title="Stark Tech"></div>
+              <div class="theme-dot theme-dot-captain" data-theme="captain" title="Super Soldier"></div>
+              <div class="theme-dot theme-dot-spiderman" data-theme="spiderman" title="Web Slinger"></div>
+              <div class="theme-dot theme-dot-tva" data-theme="tva" title="TVA Chronicle"></div>
+              <div class="theme-dot theme-dot-wakanda" data-theme="wakanda" title="Wakanda Vibranium"></div>
+              <div class="theme-dot theme-dot-sorcerer" data-theme="sorcerer" title="Sorcerer Supreme"></div>
+            </div>
+            <hr class="dropdown-separator">
+            <a id="floating-theme-toggle" href="#" title="Toggle Theme">
+              <img src="assets/menubar/toggletheme.svg" class="dropdown-icon" alt="">
+              <span>Toggle Theme</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="surface-card changelog-header">
+      <h1>Nexus Changelog</h1>
+      <p>Interactive tracker documenting timeline updates, feature additions, removals, and repository patches.</p>
+      
+      <div class="changelog-controls-panel">
+        <div class="changelog-search-wrap">
+          <svg class="changelog-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" id="changelogSearch" class="changelog-search-input" placeholder="Search version, features, dates…" autocomplete="off" spellcheck="false">
+        </div>
+        
+        <div class="changelog-filter-group">
+          <button class="changelog-filter-btn active" data-filter="all">All Logs</button>
+          <button class="changelog-filter-btn" data-filter="added">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981"></span> Added
+          </button>
+          <button class="changelog-filter-btn" data-filter="removed">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#ef4444"></span> Removed
+          </button>
+          <button class="changelog-filter-btn" data-filter="improved">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#3b82f6"></span> Improved
+          </button>
+          <button class="changelog-filter-btn" data-filter="fixed">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#f59e0b"></span> Fixed
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline Container -->
+    <div id="changelogTimeline" class="changelog-timeline">
+      
+      <!-- v1.4.0 Entry -->
+      <div class="timeline-card" data-version="1.4.0">
+        <div class="timeline-node" aria-hidden="true"></div>
+        <div class="timeline-item-card">
+          <div class="timeline-meta">
+            <span class="timeline-date">May 24, 2026</span>
+            <span class="timeline-version">v1.4.0</span>
+          </div>
+          <h2 class="timeline-title">Changelog Hub & Offline Architecture Integration</h2>
+          <p class="timeline-desc">Introduced a premium, fully interactive, offline-capable Changelog page and a comprehensive GitHub-synced tracking workflow.</p>
+          <div class="timeline-change-list">
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Created a beautiful custom interactive <code>changelog.html</code> interface supporting real-time filter categories and instant search.</div>
+            </div>
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Wrote comprehensive <code>CHANGELOG.md</code> detailing chronological product development milestones for direct GitHub integration.</div>
+            </div>
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Designed and added a customized, pixel-perfect <code>changelog.svg</code> menu bar icon to assets.</div>
+            </div>
+            <div class="change-item" data-type="improved">
+              <span class="change-tag change-tag-improved">Improved</span>
+              <div class="change-details">Enhanced primary topbars and mobile collapsible hamburger menus across all pages to integrate links leading smoothly to the new hub.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- v1.3.5 Entry -->
+      <div class="timeline-card" data-version="1.3.5">
+        <div class="timeline-node" aria-hidden="true"></div>
+        <div class="timeline-item-card">
+          <div class="timeline-meta">
+            <span class="timeline-date">April 12, 2026</span>
+            <span class="timeline-version">v1.3.5</span>
+          </div>
+          <h2 class="timeline-title">Upcoming Shows Release Countdown Tracker</h2>
+          <p class="timeline-desc">Upgraded chronological tracking with automated Disney+ series episode counts and direct PDF printing compatibility enhancements.</p>
+          <div class="timeline-change-list">
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Implemented automatic live show status check countdown markers in <code>shows.html</code>.</div>
+            </div>
+            <div class="change-item" data-type="improved">
+              <span class="change-tag change-tag-improved">Improved</span>
+              <div class="change-details">Upgraded Print Watch Order CSS media queries to style compact PDF outputs with customized column alignments.</div>
+            </div>
+            <div class="change-item" data-type="removed">
+              <span class="change-tag change-tag-removed">Removed</span>
+              <div class="change-details">Removed legacy redundant inline SVG countdown markers to reduce network payload sizes.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- v1.3.0 Entry -->
+      <div class="timeline-card" data-version="1.3.0">
+        <div class="timeline-node" aria-hidden="true"></div>
+        <div class="timeline-item-card">
+          <div class="timeline-meta">
+            <span class="timeline-date">February 20, 2026</span>
+            <span class="timeline-version">v1.3.0</span>
+          </div>
+          <h2 class="timeline-title">Quantum Radar & Character Journey Updates</h2>
+          <p class="timeline-desc">Created deep character spotlight filters and local timeline search tools to assist watchers in customizing timeline progressions.</p>
+          <div class="timeline-change-list">
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Introduced the glassmorphic <strong>Quantum Radar banner</strong> to spotlight the user's recommended next watch on page load.</div>
+            </div>
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Engineered the <strong>Character &amp; Infinity Journeys decks</strong>, complete with customized glow styles (e.g. Iron Man, Thor, Wanda).</div>
+            </div>
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Wrote progress export &amp; import controls featuring lightweight compressed string sharing.</div>
+            </div>
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Patched a layout bug in TVA theme where character selection avatars would stretch on smaller screens.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- v1.2.0 Entry -->
+      <div class="timeline-card" data-version="1.2.0">
+        <div class="timeline-node" aria-hidden="true"></div>
+        <div class="timeline-item-card">
+          <div class="timeline-meta">
+            <span class="timeline-date">January 05, 2026</span>
+            <span class="timeline-version">v1.2.0</span>
+          </div>
+          <h2 class="timeline-title">Custom Mood Themes & Studio Filters</h2>
+          <p class="timeline-desc">Built modular styling systems supporting customized Marvel Cinematic Universe environments and studio classifications.</p>
+          <div class="timeline-change-list">
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Integrated Wakanda Gold, Stark Red, Sorcerer Violet, TVA Orange, and Spider-Man theme sets.</div>
+            </div>
+            <div class="change-item" data-type="improved">
+              <span class="change-tag change-tag-improved">Improved</span>
+              <div class="change-details">Added 'Select All' and 'Clear' controls inside filtering panels to simplify sorting selections.</div>
+            </div>
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Fixed a dark-to-light theme transition bug that caused high-contrast screens to flash standard grey.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- v1.0.0 Entry -->
+      <div class="timeline-card" data-version="1.0.0">
+        <div class="timeline-node" aria-hidden="true"></div>
+        <div class="timeline-item-card">
+          <div class="timeline-meta">
+            <span class="timeline-date">November 10, 2025</span>
+            <span class="timeline-version">v1.0.0</span>
+          </div>
+          <h2 class="timeline-title">MCU Viewing Order Foundation</h2>
+          <p class="timeline-desc">Initialized the fully responsive chronological and release tracking guides, timeline filters, and local achievements engine.</p>
+          <div class="timeline-change-list">
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Designed the core timeline tracker featuring fully offline local storage syncing.</div>
+            </div>
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Created six unique achievement badges representing completion milestones.</div>
+            </div>
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Wrote detailed Marvel timeline datasets incorporating films, shows, one-shots, and series.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Empty Search State -->
+    <div id="changelogEmptyState" class="changelog-empty-state hidden" aria-hidden="true">
+      <div class="changelog-empty-icon">🛡️</div>
+      <div class="changelog-empty-title">No Timeline Records Found</div>
+      <div class="changelog-empty-desc">Your search parameters did not return any Marvel update logs. Try a different keyword.</div>
+    </div>
+
+    <footer class="legal-footer">
+      <p>Marvel, the Marvel logo, and all Marvel characters, titles, and related content are trademarks and &copy; of Marvel Entertainment, LLC. All rights reserved. This site is an unofficial fan resource and is not affiliated with, endorsed by, or connected to Marvel Entertainment, LLC, The Walt Disney Company, or any of their subsidiaries. All film, television, and streaming content referenced belongs to their respective owners.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // ─── Filter & Search Logic ───
+    const searchInput = document.getElementById("changelogSearch");
+    const filterButtons = document.querySelectorAll(".changelog-filter-btn");
+    const cards = document.querySelectorAll(".timeline-card");
+    const emptyState = document.getElementById("changelogEmptyState");
+    let activeFilter = "all";
+    let searchQuery = "";
+
+    function filterTimeline() {
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const items = card.querySelectorAll(".change-item");
+        let matchesSearch = false;
+        let matchesFilter = false;
+
+        // Reset display inside items
+        items.forEach(item => {
+          const type = item.getAttribute("data-type");
+          const text = item.textContent.toLowerCase();
+          const matchesType = (activeFilter === "all" || type === activeFilter);
+          const matchesQuery = (!searchQuery || text.includes(searchQuery));
+
+          if (matchesType && matchesQuery) {
+            item.style.display = "flex";
+            matchesSearch = true;
+          } else {
+            item.style.display = "none";
+          }
+        });
+
+        // Also check if version, date, title, or description matches query when no specific item match is required
+        const cardTitle = card.querySelector(".timeline-title").textContent.toLowerCase();
+        const cardDesc = card.querySelector(".timeline-desc").textContent.toLowerCase();
+        const cardVer = card.getAttribute("data-version").toLowerCase();
+        const matchesCardMeta = !searchQuery || cardTitle.includes(searchQuery) || cardDesc.includes(searchQuery) || cardVer.includes(searchQuery);
+
+        // If filtering by type, there must be at least one matching item inside the card
+        // If not filtering (all), matching the query anywhere in the card is enough
+        if (activeFilter === "all") {
+          matchesFilter = true;
+        } else {
+          // Verify if the card has any visible items of the filtered type
+          let hasType = false;
+          items.forEach(item => {
+            if (item.getAttribute("data-type") === activeFilter) hasType = true;
+          });
+          matchesFilter = hasType;
+        }
+
+        const isVisible = matchesFilter && (matchesSearch || (activeFilter === "all" && matchesCardMeta));
+
+        if (isVisible) {
+          card.classList.remove("hidden");
+          visibleCount++;
+          // If search matched card metadata but not specific items, reset item displays to show everything
+          if (searchQuery && matchesCardMeta && !matchesSearch && activeFilter === "all") {
+            items.forEach(item => item.style.display = "flex");
+          }
+        } else {
+          card.classList.add("hidden");
+        }
+      });
+
+      if (visibleCount === 0) {
+        emptyState.classList.remove("hidden");
+        emptyState.setAttribute("aria-hidden", "false");
+      } else {
+        emptyState.classList.add("hidden");
+        emptyState.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    searchInput.addEventListener("input", e => {
+      searchQuery = e.target.value.toLowerCase().trim();
+      filterTimeline();
+    });
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        filterButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeFilter = btn.getAttribute("data-filter");
+        filterTimeline();
+      });
+    });
+
+    // ─── Theme Synchronization ───
+    const applyTheme = (theme) => {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      document.body.classList.toggle("dark", theme === "dark");
+      const meta = document.getElementById("theme-color-meta");
+      if (meta) meta.setAttribute("content", theme === "dark" ? "#0d1016" : "#eef1f6");
+      localStorage.setItem("theme", theme);
+      if (theme === "light") {
+        applyMoodTheme("classic");
+      }
+    };
+    applyTheme(localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+
+    document.getElementById("floating-theme-toggle")?.addEventListener("click", e => {
+      e.preventDefault();
+      applyTheme(document.body.classList.contains("dark") ? "light" : "dark");
+    });
+
+    function applyMoodTheme(mood) {
+      document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer", "theme-captain", "theme-spiderman");
+      if (mood && mood !== "classic") {
+        document.body.classList.add(`theme-${mood}`);
+        if (!document.body.classList.contains("dark")) {
+          applyTheme("dark");
+        }
+      }
+      localStorage.setItem("mcu_mood_theme", mood);
+      document.querySelectorAll(".theme-dot").forEach(dot => {
+        dot.classList.toggle("active", dot.getAttribute("data-theme") === mood);
+      });
+    }
+
+    const savedMood = localStorage.getItem("mcu_mood_theme") || "classic";
+    applyMoodTheme(savedMood);
+
+    document.querySelectorAll(".theme-dot").forEach(dot => {
+      dot.addEventListener("click", event => {
+        applyMoodTheme(dot.getAttribute("data-theme"));
+      });
+    });
+
+    // ─── Hamburger Mobile Toggle ───
+    const hamburger = document.getElementById("hamburger");
+    const hamburgerIcon = document.getElementById("hamburger-icon");
+    const dropdown = document.getElementById("dropdown");
+
+    hamburger?.addEventListener("click", e => {
+      e.stopPropagation();
+      const isOpen = !dropdown.classList.toggle("hidden");
+      hamburger.setAttribute("aria-expanded", String(isOpen));
+      hamburgerIcon.classList.toggle("open", isOpen);
+    });
+
+    dropdown?.addEventListener("click", e => e.stopPropagation());
+
+    document.addEventListener("click", () => {
+      dropdown?.classList.add("hidden");
+      hamburger?.setAttribute("aria-expanded", "false");
+      hamburgerIcon?.classList.remove("open");
+    });
+  </script>
+</body>
+</html>
