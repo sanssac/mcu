@@ -543,19 +543,25 @@ async function loadData() {
     renderList(filteredData());
   }, 150);
 
-  searchInput.addEventListener("input", () => {
-    searchClear.hidden = searchInput.value === "";
-    debouncedSearch();
-  });
-  searchClear.addEventListener("click", () => {
-    searchInput.value = "";
-    searchClear.hidden = true;
-    searchInput.focus();
-    saveFilterState();
-    renderList(filteredData());
-  });
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      if (searchClear) searchClear.hidden = searchInput.value === "";
+      debouncedSearch();
+    });
+  }
+  if (searchClear) {
+    searchClear.addEventListener("click", () => {
+      if (searchInput) {
+        searchInput.value = "";
+        searchInput.focus();
+      }
+      searchClear.hidden = true;
+      saveFilterState();
+      renderList(filteredData());
+    });
+  }
 
-  document.getElementById("hideWatched").addEventListener("change", () => {
+  document.getElementById("hideWatched")?.addEventListener("change", () => {
     updateSortControls();
     saveFilterState();
     renderList(filteredData());
@@ -1228,8 +1234,27 @@ function getProgressStats(items = fullData) {
   };
 }
 
+function matchesSearchQuery(item, query) {
+  if (!query) return true;
+  const displayTitle = getDisplayTitle(item).toLowerCase();
+  const rawTitle     = (item.title || "").toLowerCase();
+  const showName     = (item.show || "").toLowerCase();
+  const typeName     = (item.type || "").toLowerCase();
+  const phaseName    = (typeof getItemPhase === "function" ? getItemPhase(item) : "").toLowerCase();
+  const year         = item.release_date ? String(item.release_date).substring(0, 4) : "";
+  const multiverse   = (typeof multiverseName === "function" ? multiverseName(item.multiverse) : "").toLowerCase();
+
+  return displayTitle.includes(query)
+    || rawTitle.includes(query)
+    || showName.includes(query)
+    || typeName.includes(query)
+    || phaseName.includes(query)
+    || year.includes(query)
+    || multiverse.includes(query);
+}
+
 function filteredData() {
-  const query       = document.getElementById("search").value.toLowerCase();
+  const query       = (document.getElementById("search")?.value || "").toLowerCase().trim();
   const hideWatched = document.getElementById("hideWatched")?.checked;
   const typeVals    = Array.from(document.querySelectorAll("#typeFilter input:checked")).map(c => c.value);
   const canonVals   = Array.from(document.querySelectorAll("#canonFilter input:checked")).map(c => c.value);
@@ -1242,7 +1267,7 @@ function filteredData() {
     const mvMatch    = mvVals.length    === 0 || mvVals.includes(String(item.multiverse));
     const journeyMatch = !activeJourney || matchesJourney(item, activeJourney);
     
-    return getDisplayTitle(item).toLowerCase().includes(query)
+    return matchesSearchQuery(item, query)
       && (!hideWatched || !isWatched)
       && typeMatch && canonMatch && mvMatch
       && journeyMatch;
