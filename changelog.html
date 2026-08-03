@@ -13,7 +13,7 @@
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
-  <script>(function(){var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark');})()</script>
+  <script>(function(){var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark'){document.documentElement.classList.add('dark');var m=document.getElementById('theme-color-meta');if(m)m.content='#08090e';}})()</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -163,6 +163,52 @@
     <!-- Timeline Container -->
     <div id="changelogTimeline" class="changelog-timeline">
       
+      <!-- v1.5.0 Entry -->
+      <div class="timeline-card" data-version="1.5.0">
+        <div class="timeline-node" aria-hidden="true"></div>
+        <div class="timeline-item-card">
+          <div class="timeline-meta">
+            <span class="timeline-date">August 3, 2026</span>
+            <span class="timeline-version">v1.5.0</span>
+          </div>
+          <h2 class="timeline-title">Dedicated MCU Viewing Order SEO Landing Hub</h2>
+          <p class="timeline-desc">Engineered a standalone, highly SEO-optimized landing page (mcu-viewing-order.html) equipped with Schema.org JSON-LD structured data and comprehensive Phase 1-6 guides.</p>
+          <div class="timeline-change-list">
+            <div class="change-item" data-type="added">
+              <span class="change-tag change-tag-added">Added</span>
+              <div class="change-details">Created <code>mcu-viewing-order.html</code> featuring semantic HTML5 markup, Open Graph tags, and <code>HowTo</code> + <code>FAQPage</code> structured data schemas.</div>
+            </div>
+            <div class="change-item" data-type="improved">
+              <span class="change-tag change-tag-improved">Improved</span>
+              <div class="change-details">Integrated direct CTA links connecting the SEO landing guide directly to the live interactive progress tracker.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- v1.4.1 Entry -->
+      <div class="timeline-card" data-version="1.4.1">
+        <div class="timeline-node" aria-hidden="true"></div>
+        <div class="timeline-item-card">
+          <div class="timeline-meta">
+            <span class="timeline-date">August 3, 2026</span>
+            <span class="timeline-version">v1.4.1</span>
+          </div>
+          <h2 class="timeline-title">Dark Mode Transition & Page Pre-render Patch</h2>
+          <p class="timeline-desc">Eliminated light background flashing during page navigation in dark mode by scoping CSS tokens and canvas color schemes directly to early document initialization.</p>
+          <div class="timeline-change-list">
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Scoped dark theme tokens to <code>html.dark</code> in <code>style.css</code> to apply dark background variables before body script execution.</div>
+            </div>
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Updated inline head scripts in <code>upcoming.html</code>, <code>shows.html</code>, <code>faq.html</code>, and <code>changelog.html</code> to dynamically set dark theme-color meta tags.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- v1.4.0 Entry -->
       <div class="timeline-card" data-version="1.4.0">
         <div class="timeline-node" aria-hidden="true"></div>

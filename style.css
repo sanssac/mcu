@@ -32,11 +32,7 @@
   --max-width: 1180px;
 }
 
-html.dark {
-  background-color: #08090e;
-  background-image: none;
-}
-
+html.dark,
 body.dark {
   color-scheme: dark;
   --bg: #08090e;

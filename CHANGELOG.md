@@ -2,6 +2,16 @@
 
 All notable changes, additions, removals, and repository patches for **MCU Nexus** will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] — 2026-08-03
+### ✨ Features & Upgrades
+- **Dedicated SEO Viewing Order Guide**: Built a dedicated, search-engine-optimized page (`mcu-viewing-order.html`) featuring JSON-LD structured data schemas (`HowTo`, `FAQPage`, `ItemList`), Open Graph & Twitter Cards, and Phase 1–6 chronological vs. release order breakdowns.
+
+---
+
+## [1.4.1] — 2026-08-03
+### 🛠️ Fixed
+- **Dark Mode Page Transition Flash**: Scoped dark theme CSS tokens to `html.dark` in `style.css` and updated early `<head>` initialization scripts to prevent white background flashes when switching between pages.
+
 ---
 
 ## [1.4.0] — 2026-05-24
