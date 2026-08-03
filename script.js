@@ -2529,12 +2529,39 @@ window.addEventListener("afterprint", () => {
   document.getElementById("printView")?.setAttribute("aria-hidden", "true");
 });
 
-function debounce(func, wait) {
-  let timeout;
-  return function(...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
-  };
+function initKeyboardShortcuts() {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const searchInput = document.getElementById("search");
+      if (searchInput && document.activeElement === searchInput) {
+        searchInput.value = "";
+        searchInput.dispatchEvent(new Event("input"));
+        searchInput.blur();
+        return;
+      }
+      const dropdown = document.getElementById("dropdown");
+      if (dropdown && !dropdown.classList.contains("hidden")) {
+        dropdown.classList.add("hidden");
+        document.getElementById("hamburger")?.setAttribute("aria-expanded", "false");
+      }
+      const filtersPanel = document.getElementById("filtersPanel");
+      if (filtersPanel && !filtersPanel.classList.contains("hidden")) {
+        filtersPanel.classList.add("hidden");
+      }
+      return;
+    }
+
+    if ((e.key === "/" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") ||
+        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
+      const searchInput = document.getElementById("search");
+      if (searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
+    }
+  });
 }
 
+initKeyboardShortcuts();
 loadData();
