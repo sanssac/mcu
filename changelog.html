@@ -167,6 +167,37 @@
     <!-- Timeline Container -->
     <div id="changelogTimeline" class="changelog-timeline">
       
+      <!-- v1.5.1 Entry -->
+      <div class="timeline-card" data-version="1.5.1">
+        <div class="timeline-node" aria-hidden="true"></div>
+        <div class="timeline-item-card">
+          <div class="timeline-meta">
+            <span class="timeline-date">August 10, 2026</span>
+            <span class="timeline-version">v1.5.1</span>
+          </div>
+          <h2 class="timeline-title">Quantum Radar Search Engine & Light Theme Initialization Fixes</h2>
+          <p class="timeline-desc">Resolved critical script initialization errors, implemented normalized search matching with character aliases, and eliminated light theme Temporal Dead Zone execution errors across Release and Chronological views.</p>
+          <div class="timeline-change-list">
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Implemented missing <code>debounce()</code> utility function in <code>script.js</code> to fix <code>Uncaught ReferenceError</code> blocking search event listeners in Release and Chronological views.</div>
+            </div>
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Engineered normalized multi-field search logic with <code>normalizeSearchText()</code> and <code>SEARCH_ALIASES</code> to support punctuation-insensitive searching for S.H.I.E.L.D., Spider-Man, and What If...?, while removing synthetic category noise.</div>
+            </div>
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Hoisted <code>THEME_DETAILS</code> declaration in <code>script.js</code> to prevent Temporal Dead Zone <code>ReferenceError</code> when initializing under Light Theme mode.</div>
+            </div>
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Added optional chaining to <code>hideWatched</code> element assignments in <code>restoreFilterState()</code> to prevent DOM null pointer exceptions.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- v1.5.0 Entry -->
       <div class="timeline-card" data-version="1.5.0">
         <div class="timeline-node" aria-hidden="true"></div>

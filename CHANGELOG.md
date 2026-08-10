@@ -2,6 +2,15 @@
 
 All notable changes, additions, removals, and repository patches for **MCU Nexus** will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.1] — 2026-08-10
+### 🛠️ Fixed
+- **Search Initialization & Debounce Patch**: Implemented missing `debounce()` utility function in `script.js` to fix `Uncaught ReferenceError` when binding search input event listeners in Release and Chronological views.
+- **Normalized Multi-Field Search Engine**: Upgraded `matchesSearchQuery()` with `normalizeSearchText()` and alias dictionary `SEARCH_ALIASES` for punctuation-insensitive search (e.g. matching `shield` to `S.H.I.E.L.D.`, `spiderman` to `Spider-Man`, `what if` to `What If...?`), and removed synthetic category label noise from title search.
+- **Light Theme TDZ Initialization Fix**: Moved `THEME_DETAILS` declaration prior to theme application functions to prevent `ReferenceError: Cannot access 'THEME_DETAILS' before initialization` in Light Mode.
+- **Defensive Filter DOM Guarding**: Added optional chaining guards around `hideWatched` DOM references in `restoreFilterState()` to prevent `TypeError` during filter state restoration.
+
+---
+
 ## [1.5.0] — 2026-08-03
 ### ✨ Features & Upgrades
 - **Dedicated SEO Viewing Order Guide**: Built a dedicated, search-engine-optimized page (`mcu-viewing-order.html`) featuring JSON-LD structured data schemas (`HowTo`, `FAQPage`, `ItemList`), Open Graph & Twitter Cards, and Phase 1–6 chronological vs. release order breakdowns.
