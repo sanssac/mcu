@@ -435,7 +435,8 @@ function restoreFilterState() {
 
   const savedHide = localStorage.getItem("filter_hideWatched");
   if (savedHide !== null) {
-    document.getElementById("hideWatched").checked = savedHide === "true";
+    const hideEl = document.getElementById("hideWatched");
+    if (hideEl) hideEl.checked = savedHide === "true";
   }
   setViewMode(localStorage.getItem("filter_viewMode") || "comfortable");
 
@@ -444,8 +445,8 @@ function restoreFilterState() {
     setSearchValue(params.get("q") || "");
     sortMode = normalizeSortMode(params.get("sort") || "release");
     sortDirection = normalizeSortDirection(params.get("direction") || "asc");
-    document.getElementById("hideWatched").checked =
-      params.get("hide") === "1" || params.get("hide") === "true";
+    const hideEl = document.getElementById("hideWatched");
+    if (hideEl) hideEl.checked = params.get("hide") === "1" || params.get("hide") === "true";
     setPanelValues("#typeFilter", getUrlValues(params, "type"));
     setPanelValues("#canonFilter", getUrlValues(params, "canon"));
     setPanelValues("#multiverseFilter", getUrlValues(params, "universe"));
@@ -477,6 +478,14 @@ function selectFilterPanel(panelSelector) {
 
 function clearFilterPanel(panelSelector) {
   setFilterPanelChecked(panelSelector, false);
+}
+
+function debounce(fn, delay = 150) {
+  let timeoutId;
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn.apply(this, args), delay);
+  };
 }
 
 
@@ -1234,23 +1243,87 @@ function getProgressStats(items = fullData) {
   };
 }
 
+function normalizeSearchText(str) {
+  if (typeof str !== "string") return "";
+  return str
+    .toLowerCase()
+    .replace(/[.\-:?`'"!(),]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const SEARCH_ALIASES = {
+  "shield": ["agents of shield", "s.h.i.e.l.d."],
+  "agent carter": ["peggy carter"],
+  "spiderman": ["spider man", "peter parker", "miles morales", "web slinger"],
+  "iron man": ["tony stark", "stark"],
+  "cap": ["captain america", "steve rogers", "sam wilson", "first avenger"],
+  "thor": ["god of thunder", "odinson"],
+  "wanda": ["scarlet witch", "wandavision"],
+  "vision": ["wandavision", "visionquest"],
+  "hawkeye": ["clint barton", "kate bishop"],
+  "falcon": ["sam wilson", "the falcon"],
+  "black widow": ["natasha romanoff", "yelena belova"],
+  "guardians": ["guardians of the galaxy", "star lord", "groot", "rocket"],
+  "strange": ["doctor strange", "doc strange", "supreme sorcerer"],
+  "avengers": ["avengers age of ultron", "avengers infinity war", "avengers endgame"]
+};
+
 function matchesSearchQuery(item, query) {
   if (!query) return true;
-  const displayTitle = getDisplayTitle(item).toLowerCase();
-  const rawTitle     = (item.title || "").toLowerCase();
-  const showName     = (item.show || "").toLowerCase();
-  const typeName     = (item.type || "").toLowerCase();
-  const phaseName    = (typeof getItemPhase === "function" ? getItemPhase(item) : "").toLowerCase();
-  const year         = item.release_date ? String(item.release_date).substring(0, 4) : "";
-  const multiverse   = (typeof multiverseName === "function" ? multiverseName(item.multiverse) : "").toLowerCase();
+  const rawQueryTrim = query.trim().toLowerCase();
+  if (!rawQueryTrim) return true;
 
-  return displayTitle.includes(query)
-    || rawTitle.includes(query)
-    || showName.includes(query)
-    || typeName.includes(query)
-    || phaseName.includes(query)
-    || year.includes(query)
-    || multiverse.includes(query);
+  const normQuery = normalizeSearchText(query);
+
+  const displayTitle = getDisplayTitle(item);
+  const displayTitleNorm = normalizeSearchText(displayTitle);
+  const rawTitleNorm     = normalizeSearchText(item.title || "");
+  const showNameNorm     = normalizeSearchText(item.show || "");
+  const year             = item.release_date ? String(item.release_date).substring(0, 4) : "";
+
+  // 1. Direct normalized substring match or exact release year match
+  if (
+    (normQuery && (
+      displayTitleNorm.includes(normQuery) ||
+      rawTitleNorm.includes(normQuery) ||
+      showNameNorm.includes(normQuery)
+    )) ||
+    year === rawQueryTrim
+  ) {
+    return true;
+  }
+
+  // 2. Direct raw substring match
+  if (
+    displayTitle.toLowerCase().includes(rawQueryTrim) ||
+    (item.title || "").toLowerCase().includes(rawQueryTrim) ||
+    (item.show || "").toLowerCase().includes(rawQueryTrim)
+  ) {
+    return true;
+  }
+
+  // 3. Alias keyword matching
+  if (normQuery) {
+    for (const [aliasKey, keywords] of Object.entries(SEARCH_ALIASES)) {
+      const normKey = normalizeSearchText(aliasKey);
+      if (normQuery === normKey || normQuery.includes(normKey) || normKey.includes(normQuery)) {
+        if (
+          displayTitleNorm.includes(normKey) ||
+          rawTitleNorm.includes(normKey) ||
+          showNameNorm.includes(normKey) ||
+          keywords.some(kw => {
+            const normKw = normalizeSearchText(kw);
+            return displayTitleNorm.includes(normKw) || rawTitleNorm.includes(normKw) || showNameNorm.includes(normKw);
+          })
+        ) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }
 
 function filteredData() {
@@ -1490,6 +1563,16 @@ function matchMultiverseHeight() {
 }
 
 // ─── Theme — mirrors main site logic exactly ───
+const THEME_DETAILS = {
+  classic: { name: "Classic Nexus", emoji: "🌌" },
+  stark: { name: "Stark Tech", emoji: "🦾" },
+  captain: { name: "Super Soldier", emoji: "🛡️" },
+  spiderman: { name: "Web Slinger", emoji: "🕸️" },
+  tva: { name: "TVA Chronicle", emoji: "⏳" },
+  wakanda: { name: "Wakanda Vibranium", emoji: "🐾" },
+  sorcerer: { name: "Sorcerer Supreme", emoji: "🔮" }
+};
+
 const applyTheme = (theme) => {
   document.documentElement.classList.toggle("dark", theme === "dark");
   document.body.classList.toggle("dark", theme === "dark");
@@ -1511,16 +1594,6 @@ function toggleTheme() {
   const current = document.body.classList.contains("dark") ? "dark" : "light";
   applyTheme(current === "dark" ? "light" : "dark");
 }
-
-const THEME_DETAILS = {
-  classic: { name: "Classic Nexus", emoji: "🌌" },
-  stark: { name: "Stark Tech", emoji: "🦾" },
-  captain: { name: "Super Soldier", emoji: "🛡️" },
-  spiderman: { name: "Web Slinger", emoji: "🕸️" },
-  tva: { name: "TVA Chronicle", emoji: "⏳" },
-  wakanda: { name: "Wakanda Vibranium", emoji: "🐾" },
-  sorcerer: { name: "Sorcerer Supreme", emoji: "🔮" }
-};
 
 function applyMoodTheme(mood) {
   document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer", "theme-captain", "theme-spiderman");
