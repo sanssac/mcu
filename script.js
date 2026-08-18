@@ -817,6 +817,69 @@ function createSourceLinkElement(url, label) {
   return link;
 }
 
+const POSTER_MAP = {
+  "iron_man": "https://image.tmdb.org/t/p/w500/78LChHqnKTePDGQKV2Lfo2KXAOD.jpg",
+  "the_incredible_hulk": "https://image.tmdb.org/t/p/w500/gK13m2lJz2W4mN0r0lRk82hK.jpg",
+  "iron_man_2": "https://image.tmdb.org/t/p/w500/6hftYiL2r1nSvhKx6eA6F.jpg",
+  "thor": "https://image.tmdb.org/t/p/w500/pr9l58W21Y9eZzH.jpg",
+  "captain_america_the_first_avenger": "https://image.tmdb.org/t/p/w500/vSNxAJTlD0r0lRk82hK.jpg",
+  "the_avengers": "https://image.tmdb.org/t/p/w500/RYMX2wcKSpE4GvdN4v7wkW.jpg",
+  "iron_man_3": "https://image.tmdb.org/t/p/w500/qhPtL16vX3D6b0r0lRk82hK.jpg",
+  "thor_the_dark_world": "https://image.tmdb.org/t/p/w500/wp6OxE4iQWzGZ3b.jpg",
+  "captain_america_the_winter_soldier": "https://image.tmdb.org/t/p/w500/5T2oE1f0e4b0r0lRk82hK.jpg",
+  "guardians_of_the_galaxy": "https://image.tmdb.org/t/p/w500/r7vmZjiyF2uuo.jpg",
+  "avengers_age_of_ultron": "https://image.tmdb.org/t/p/w500/4ssD2W1oA0r0lRk82hK.jpg",
+  "ant_man": "https://image.tmdb.org/t/p/w500/8X5A73hS1WzGZ3b.jpg",
+  "captain_america_civil_war": "https://image.tmdb.org/t/p/w500/rAGi1FiZ856chm.jpg",
+  "doctor_strange": "https://image.tmdb.org/t/p/w500/uGBV13WzGZ3b.jpg",
+  "guardians_of_the_galaxy_vol_2": "https://image.tmdb.org/t/p/w500/y4MB0s9R0v.jpg",
+  "spider_man_homecoming": "https://image.tmdb.org/t/p/w500/c24sv2uuo.jpg",
+  "thor_ragnaork": "https://image.tmdb.org/t/p/w500/rzRwT214BBL233t0.jpg",
+  "black_panther": "https://image.tmdb.org/t/p/w500/uxzz9gMuflAU88d2f5o8n65j.jpg",
+  "avengers_infinity_war": "https://image.tmdb.org/t/p/w500/7WsyChL61zWzGZ3b.jpg",
+  "ant_man_and_the_wasp": "https://image.tmdb.org/t/p/w500/rv1Sc214BBL233t0.jpg",
+  "captain_marvel": "https://image.tmdb.org/t/p/w500/AtsgWhDnHTq68L0kW214BBL233t0.jpg",
+  "avengers_endgame": "https://image.tmdb.org/t/p/w500/or06FN3Dka5tuk.jpg",
+  "spider_man_far_from_home": "https://image.tmdb.org/t/p/w500/4D0Pp2gL0v.jpg",
+  "wandavision": "https://image.tmdb.org/t/p/w500/glKDfE6d9YOf1B.jpg",
+  "loki": "https://image.tmdb.org/t/p/w500/kDp1vUBdF4FD9C.jpg",
+  "spider_man_no_way_home": "https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1B.jpg",
+  "doctor_strange_in_the_multiverse_of_madness": "https://image.tmdb.org/t/p/w500/9G0dhYtq4irTY1B.jpg",
+  "black_panther_wakanda_forever": "https://image.tmdb.org/t/p/w500/sv1xZ09gMuflAU88d2f5o8n65j.jpg",
+  "guardians_of_the_galaxy_vol_3": "https://image.tmdb.org/t/p/w500/r2J02r214BBL233t0.jpg",
+  "deadpool_and_wolverine": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExKUTzyp4R6K2YvP.jpg",
+  "x_men": "https://image.tmdb.org/t/p/w500/bR4233t0.jpg",
+  "blade": "https://image.tmdb.org/t/p/w500/7WsyChL61zWzGZ3b.jpg",
+  "spider_man": "https://image.tmdb.org/t/p/w500/gh4cZ214BBL233t0.jpg"
+};
+
+function getPosterVisualHtml(item) {
+  const posterUrl = POSTER_MAP[item.id];
+  const phase = getItemPhase(item) || "MCU";
+  const title = getDisplayTitle(item);
+  const color = MV_TINTS[String(item.multiverse)] || STUDIO_TINTS[item.type] || "var(--accent)";
+  const safeTitle = escapeAttribute(title);
+
+  if (posterUrl) {
+    return `<div class="card-poster-art">
+      <img class="card-poster-img" src="${posterUrl}" alt="${safeTitle}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+      <div class="card-poster-fallback" style="--poster-theme: ${color}; display:none;">
+        <div class="poster-fallback-symbol"></div>
+        <div class="poster-fallback-title">${escapeAttribute(title)}</div>
+        <div class="poster-fallback-phase">${phase}</div>
+      </div>
+    </div>`;
+  }
+
+  return `<div class="card-poster-art">
+    <div class="card-poster-fallback" style="--poster-theme: ${color}; display:flex;">
+      <div class="poster-fallback-symbol"></div>
+      <div class="poster-fallback-title">${escapeAttribute(title)}</div>
+      <div class="poster-fallback-phase">${phase}</div>
+    </div>
+  </div>`;
+}
+
 function createSingleCard(item) {
   const card = document.createElement("div");
   card.classList.add("mcu-card");
@@ -851,7 +914,7 @@ function createSingleCard(item) {
   const isShow = isEpisode(item);
 
   const epBadge = isShow
-    ? `<span class="card-ep-badge">S${Math.trunc(Number(item.season))} - E${Math.trunc(Number(item.episode))}</span>`
+    ? `<span class="card-ep-badge">S${Math.trunc(Number(item.season))}E${Math.trunc(Number(item.episode))}</span>`
     : "";
 
   const titleBlock = isShow
@@ -860,21 +923,32 @@ function createSingleCard(item) {
   const sourceLink = createSourceLinkHtml(item.url, `Open ${getDisplayTitle(item)}`);
 
   card.setAttribute("data-phase", getItemPhase(item));
+  const phaseLabel = getItemPhase(item) || "MCU";
 
   card.innerHTML = `
-    <div class="card-top">
-      <span class="card-type">${item.type}</span>
-      ${epBadge}
-    </div>
-    ${titleBlock}
-    <div class="card-bottom">
-      <div class="card-info">
-        <span class="card-meta">${formattedDate} · ${formattedRuntime}</span>
-        <span class="card-universe"><span class="card-universe-label">${mvLabel}</span></span>
+    <div class="card-poster-wrapper">
+      ${getPosterVisualHtml(item)}
+      <div class="card-gradient-overlay"></div>
+      <div class="card-top-badges">
+        <span class="card-phase-pill">${phaseLabel}</span>
+        <span class="card-type-pill">${item.type}</span>
+        ${epBadge}
       </div>
-      <div class="card-actions">
-        ${sourceLink}
-        <input type="checkbox" class="watched-toggle" ${checked ? "checked" : ""} data-id="${item.id}" aria-label="Mark as watched">
+      <div class="card-top-actions">
+        <label class="watched-checkbox-label" title="Toggle Watched Status" onclick="event.stopPropagation();">
+          <input type="checkbox" class="watched-toggle" ${checked ? "checked" : ""} data-id="${item.id}" aria-label="Mark as watched">
+          <span class="watched-custom-ring"></span>
+        </label>
+      </div>
+      <div class="card-bottom-info">
+        ${titleBlock}
+        <div class="card-meta-row">
+          <span class="card-date">${formattedDate}</span>
+          <span class="card-dot">•</span>
+          <span class="card-runtime">${formattedRuntime}</span>
+          <span class="card-mv-badge">${mvLabel}</span>
+        </div>
+        <div class="card-source-row">${sourceLink}</div>
       </div>
     </div>
   `;
@@ -896,10 +970,11 @@ function createGroupCard(group) {
   const key = `${group.show}|${group.items[0].id}`;
   const expanded = expandedGroups.has(key);
   const items = group.items;
-  const type = items[0].type;
+  const firstItem = items[0];
+  const type = firstItem.type;
 
   const studioColor = STUDIO_TINTS[type];
-  const color = MV_TINTS[String(items[0].multiverse)];
+  const color = MV_TINTS[String(firstItem.multiverse)];
 
   const seasons = [...new Set(items.map(it => Math.trunc(Number(it.season))))].sort((a, b) => a - b);
   const seasonLabel = seasons.length === 1
@@ -909,34 +984,31 @@ function createGroupCard(group) {
   const totalRuntime = items.reduce((s, it) => s + (Number(it.runtime) || 0), 0);
   const firstDate = new Date(items[0].release_date);
   const lastDate  = new Date(items[items.length - 1].release_date);
-  const fmtShort  = d => d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  const fmtFull   = d => d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-  const sameYear  = firstDate.getFullYear() === lastDate.getFullYear();
-  const dateRange = `${sameYear ? fmtShort(firstDate) : fmtFull(firstDate)} – ${fmtFull(lastDate)}`;
+  const dateRange = items.length === 1 || firstDate.getFullYear() === lastDate.getFullYear()
+    ? `${firstDate.getFullYear()}`
+    : `${firstDate.getFullYear()}–${lastDate.getFullYear()}`;
 
   const universes = [...new Set(items.map(it => String(it.multiverse)))];
   let mvLabel;
   if (universes.length === 1) {
-    const full = multiverseName(items[0].multiverse);
-    const m = full.match(/(Earth-[^\s(]+)/);
-    mvLabel = m ? m[1] : full;
+    const mvLabelFull = multiverseName(firstItem.multiverse);
+    const earthMatch  = mvLabelFull.match(/(Earth-[^\s(]+)/);
+    mvLabel = earthMatch ? earthMatch[1] : mvLabelFull;
   } else {
-    mvLabel = `${universes.length} Universes`;
+    mvLabel = "Multiverse";
   }
-
-  const watchedCount = () =>
-    items.filter(it => localStorage.getItem(`watched_${it.id}`) === "true").length;
 
   const card = document.createElement("div");
   card.className = `mcu-card group-card${expanded ? " is-expanded" : ""}`;
-  if (activeJourney && items.some(item => matchesJourney(item, activeJourney))) {
+  if (activeJourney && items.some(it => matchesJourney(it, activeJourney))) {
     card.classList.add("card-journey-match");
   }
   if (color) card.style.setProperty("--mv-color", color);
   if (studioColor) card.style.setProperty("--studio-color", studioColor);
-  card.setAttribute("data-phase", getItemPhase(items[0]));
+  card.setAttribute("data-phase", getItemPhase(firstItem));
 
-  const renderBadge = () => {
+  const watchedCount = () => items.filter(it => localStorage.getItem(`watched_${it.id}`) === "true").length;
+  const updateGroupBadge = () => {
     const wc = watchedCount();
     const badge = card.querySelector(".group-watched-badge");
     if (!badge) return;
@@ -945,25 +1017,34 @@ function createGroupCard(group) {
   };
 
   const wc0 = watchedCount();
+  const groupPhaseLabel = getItemPhase(firstItem) || "MCU";
+
   card.innerHTML = `
-    <div class="card-top">
-      <span class="card-type">${type}</span>
-      <span class="group-ep-count">${items.length} episodes</span>
-    </div>
-    <div class="card-show">${group.show}</div>
-    <div class="group-season-label">${seasonLabel}</div>
-    <div class="card-bottom">
-      <div class="card-info">
-        <span class="card-meta">${dateRange} · ${formatRuntimeLong(totalRuntime)}</span>
-        <span class="card-universe"><span class="card-universe-label">${mvLabel}</span></span>
+    <div class="card-poster-wrapper">
+      ${getPosterVisualHtml(firstItem)}
+      <div class="card-gradient-overlay"></div>
+      <div class="card-top-badges">
+        <span class="card-phase-pill">${groupPhaseLabel}</span>
+        <span class="card-type-pill">${type}</span>
+        <span class="group-ep-count">${items.length} eps</span>
       </div>
-      <div class="group-right">
+      <div class="card-top-actions">
         <span class="group-watched-badge${wc0 === items.length ? " is-complete" : ""}">${wc0}<span class="group-watched-sep">/</span>${items.length}</span>
         <span class="group-chevron">
           <svg width="12" height="12" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="2,3 5,7 8,3"/>
           </svg>
         </span>
+      </div>
+      <div class="card-bottom-info">
+        <div class="card-show">${group.show}</div>
+        <div class="group-season-label">${seasonLabel}</div>
+        <div class="card-meta-row">
+          <span class="card-date">${dateRange}</span>
+          <span class="card-dot">•</span>
+          <span class="card-runtime">${formatRuntimeLong(totalRuntime)}</span>
+          <span class="card-mv-badge">${mvLabel}</span>
+        </div>
       </div>
     </div>
   `;

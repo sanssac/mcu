@@ -1304,9 +1304,23 @@ body.print-mode #nebulaParticles {
 }
 
 /* ─── Combined Search and Controls Panel ─── */
+.sticky-controls {
+  position: sticky;
+  top: 72px;
+  z-index: 45;
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+body.dark .sticky-controls {
+  background: rgba(16, 18, 28, 0.88);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+}
+
 .combined-controls {
-  position: relative;
-  z-index: 21;
   display: grid;
   grid-template-columns: 1fr 3fr; /* 25% Search and 75% Sorting/Filtering */
   align-items: center;
@@ -2109,80 +2123,335 @@ body.dark .clear-all-btn:hover {
   gap: 16px;
 }
 
+/* ─── Disney+ / Apple TV Style Cinematic Poster Cards ─── */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  grid-auto-rows: minmax(216px, auto);
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-auto-rows: auto;
+  gap: 20px;
 }
 
 body.view-compact .card-grid {
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  grid-auto-rows: minmax(164px, auto);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
 }
 
-/* ─── Apple-style Timeline Card ─── */
 .mcu-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
-  position: relative;
+  border-radius: 18px;
+  background: rgba(18, 20, 32, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
 }
 
-/* Hairline gradient accent line */
+body.light .mcu-card {
+  background: #0f172a;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.mcu-card:hover {
+  transform: translateY(-8px) scale(1.025);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6), 0 0 30px color-mix(in oklab, var(--mv-color, var(--studio-color, var(--accent))) 45%, transparent);
+  border-color: color-mix(in oklab, var(--mv-color, var(--studio-color, var(--accent))) 70%, transparent);
+}
+
+/* Hairline gradient top accent */
 .mcu-card::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 3px;
+  height: 3.5px;
   background: linear-gradient(90deg, var(--mv-color, var(--studio-color, var(--accent))) 0%, var(--accent-secondary, var(--accent)) 100%);
-  opacity: 0.7;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 1;
+  opacity: 0.9;
+  z-index: 4;
 }
 
-body.view-compact .mcu-card {
-  padding: 14px 16px;
-  border-radius: var(--radius-md);
+/* Poster Container & Images */
+.card-poster-wrapper {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
 }
-body.dark .mcu-card {
-  background: rgba(22, 24, 38, 0.5);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+
+body.view-compact .card-poster-wrapper {
+  height: 270px;
 }
-.mcu-card:hover {
-  transform: translateY(-5px) scale(1.008);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04), 0 0 15px var(--accent-soft);
-  background: var(--surface-hover);
-  border-color: color-mix(in oklab, var(--mv-color, var(--studio-color, var(--accent))) 50%, transparent);
+
+.card-poster-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
-body.dark .mcu-card:hover {
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 25px color-mix(in oklab, var(--mv-color, var(--studio-color, var(--accent))) 30%, transparent);
-  border-color: color-mix(in oklab, var(--mv-color, var(--studio-color, var(--accent))) 55%, transparent);
+
+.card-poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.mcu-card:hover::before {
-  opacity: 1;
-  height: 3px;
-  background: linear-gradient(90deg, var(--mv-color, var(--studio-color, var(--accent))) 0%, var(--accent-secondary, var(--accent)) 100%);
-  box-shadow: 0 2px 12px var(--mv-color, var(--studio-color, var(--accent)));
+
+.mcu-card:hover .card-poster-img {
+  transform: scale(1.08);
+}
+
+/* Poster Fallback Styling */
+.card-poster-fallback {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 30%, color-mix(in oklab, var(--poster-theme) 30%, #0f172a), #090b10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+}
+
+.poster-fallback-symbol {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px dashed color-mix(in oklab, var(--poster-theme) 60%, #ffffff);
+  background: radial-gradient(circle, color-mix(in oklab, var(--poster-theme) 25%, transparent), transparent 70%);
+  margin-bottom: 12px;
+  animation: fallbackPulse 4s infinite alternate ease-in-out;
+}
+
+@keyframes fallbackPulse {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  100% { transform: scale(1.08); opacity: 1; }
+}
+
+.poster-fallback-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.25;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+}
+
+.poster-fallback-phase {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--poster-theme);
+  margin-top: 6px;
+}
+
+/* Glass Gradient Overlay */
+.card-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 10, 18, 0.6) 0%, rgba(8, 10, 18, 0.1) 30%, rgba(8, 10, 18, 0.75) 65%, rgba(8, 10, 18, 0.98) 100%);
+}
+
+/* Top Floating Badges */
+.card-top-badges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  max-width: 75%;
+}
+
+.card-phase-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(10, 12, 22, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-type-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--studio-color, var(--accent)) 30%, rgba(10, 12, 22, 0.85));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in oklab, var(--studio-color, var(--accent)) 45%, transparent);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Top Action Checkbox */
+.card-top-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.watched-checkbox-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  position: relative;
+}
+
+.watched-checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.watched-custom-ring {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(10, 12, 22, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.watched-checkbox-label:hover .watched-custom-ring {
+  border-color: #22c55e;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+}
+
+.watched-checkbox-label input[type="checkbox"]:checked + .watched-custom-ring {
+  background: #22c55e;
+  border-color: #22c55e;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+}
+
+.watched-checkbox-label input[type="checkbox"]:checked + .watched-custom-ring::after {
+  content: "✓";
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* Bottom Metadata Container */
+.card-bottom-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 14px 14px 14px 14px;
+  z-index: 3;
+  color: #ffffff;
+}
+
+.card-title {
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.card-show {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+  margin-bottom: 2px;
+}
+
+.card-ep-title {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.card-dot {
+  opacity: 0.5;
+}
+
+.card-mv-badge {
+  padding: 1.5px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.card-source-row {
+  margin-top: 6px;
 }
 
 /* Watched state */
-.mcu-card.is-watched { opacity: 0.42; }
-.mcu-card.is-watched:hover { opacity: 0.85; }
+.mcu-card.is-watched {
+  opacity: 0.55;
+  filter: grayscale(40%);
+}
+.mcu-card.is-watched:hover {
+  opacity: 0.92;
+  filter: grayscale(0%);
+}
 
 /* Hero silhouette watermark on cards (dark mode only) */
 body.dark .mcu-card::after {
@@ -2194,13 +2463,13 @@ body.dark .mcu-card::after {
   height: 100px;
   background: url('assets/hero-silhouette.webp') no-repeat center center;
   background-size: contain;
-  opacity: 0.025;
+  opacity: 0.03;
   pointer-events: none;
   z-index: 0;
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 body.dark .mcu-card:hover::after {
-  opacity: 0.045;
+  opacity: 0.06;
 }
 
 /* Card top row */
@@ -2528,13 +2797,35 @@ body.view-list .mcu-card {
   flex-direction: row;
   align-items: center;
   padding: 8px 14px;
-  border-radius: 10px;
-  gap: 4px;
+  border-radius: 14px;
+  gap: 6px;
   min-height: 0;
 }
 
 body.view-list .mcu-card:hover {
   transform: none;
+}
+
+body.view-list .card-poster-wrapper,
+body.view-list .card-bottom-info,
+body.view-list .card-top-badges,
+body.view-list .card-top-actions {
+  display: contents;
+}
+
+body.view-list .card-gradient-overlay,
+body.view-list .card-poster-art {
+  display: none;
+}
+
+body.view-list .card-phase-pill {
+  order: 0;
+  flex-shrink: 0;
+  padding: 2px 7px;
+  font-size: 0.62rem;
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--border);
 }
 
 /* Flatten card-top so type badge and ep-badge can be reordered independently */
