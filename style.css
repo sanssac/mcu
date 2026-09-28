@@ -550,6 +550,7 @@ body.dark .topbar {
 body.dark .brand-text strong {
   background: none;
   -webkit-background-clip: unset;
+  background-clip: unset;
   -webkit-text-fill-color: unset;
   color: #ffffff;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
@@ -2846,6 +2847,7 @@ body.view-list .card-show {
   flex-shrink: 0;
   display: block;
   -webkit-line-clamp: unset;
+  line-clamp: unset;
   overflow: visible;
   white-space: nowrap;
   font-size: 0.82rem;
@@ -2886,6 +2888,7 @@ body.view-list .card-ep-title {
   white-space: nowrap;
   text-overflow: ellipsis;
   -webkit-line-clamp: unset;
+  line-clamp: unset;
   font-size: 0.88rem;
   font-weight: 500;
   margin: 0;

@@ -823,6 +823,7 @@ const POSTER_MAP = {
   "iron_man_2": "https://image.tmdb.org/t/p/w500/6hftYiL2r1nSvhKx6eA6F.jpg",
   "thor": "https://image.tmdb.org/t/p/w500/pr9l58W21Y9eZzH.jpg",
   "captain_america_the_first_avenger": "https://image.tmdb.org/t/p/w500/vSNxAJTlD0r0lRk82hK.jpg",
+  "avengers": "https://image.tmdb.org/t/p/w500/RYMX2wcKSpE4GvdN4v7wkW.jpg",
   "the_avengers": "https://image.tmdb.org/t/p/w500/RYMX2wcKSpE4GvdN4v7wkW.jpg",
   "iron_man_3": "https://image.tmdb.org/t/p/w500/qhPtL16vX3D6b0r0lRk82hK.jpg",
   "thor_the_dark_world": "https://image.tmdb.org/t/p/w500/wp6OxE4iQWzGZ3b.jpg",
@@ -834,7 +835,7 @@ const POSTER_MAP = {
   "doctor_strange": "https://image.tmdb.org/t/p/w500/uGBV13WzGZ3b.jpg",
   "guardians_of_the_galaxy_vol_2": "https://image.tmdb.org/t/p/w500/y4MB0s9R0v.jpg",
   "spider_man_homecoming": "https://image.tmdb.org/t/p/w500/c24sv2uuo.jpg",
-  "thor_ragnaork": "https://image.tmdb.org/t/p/w500/rzRwT214BBL233t0.jpg",
+  "thor_ragnarok": "https://image.tmdb.org/t/p/w500/rzRwT214BBL233t0.jpg",
   "black_panther": "https://image.tmdb.org/t/p/w500/uxzz9gMuflAU88d2f5o8n65j.jpg",
   "avengers_infinity_war": "https://image.tmdb.org/t/p/w500/7WsyChL61zWzGZ3b.jpg",
   "ant_man_and_the_wasp": "https://image.tmdb.org/t/p/w500/rv1Sc214BBL233t0.jpg",
@@ -847,6 +848,7 @@ const POSTER_MAP = {
   "doctor_strange_in_the_multiverse_of_madness": "https://image.tmdb.org/t/p/w500/9G0dhYtq4irTY1B.jpg",
   "black_panther_wakanda_forever": "https://image.tmdb.org/t/p/w500/sv1xZ09gMuflAU88d2f5o8n65j.jpg",
   "guardians_of_the_galaxy_vol_3": "https://image.tmdb.org/t/p/w500/r2J02r214BBL233t0.jpg",
+  "deadpool_wolverine": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExKUTzyp4R6K2YvP.jpg",
   "deadpool_and_wolverine": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExKUTzyp4R6K2YvP.jpg",
   "x_men": "https://image.tmdb.org/t/p/w500/bR4233t0.jpg",
   "blade": "https://image.tmdb.org/t/p/w500/7WsyChL61zWzGZ3b.jpg",
@@ -854,7 +856,8 @@ const POSTER_MAP = {
 };
 
 function getPosterVisualHtml(item) {
-  const posterUrl = POSTER_MAP[item.id];
+  const showKey = item.show ? item.show.toLowerCase().replace(/[^a-z0-9]+/g, '_') : null;
+  const posterUrl = POSTER_MAP[item.id] || (showKey ? POSTER_MAP[showKey] : null);
   const phase = getItemPhase(item) || "MCU";
   const title = getDisplayTitle(item);
   const color = MV_TINTS[String(item.multiverse)] || STUDIO_TINTS[item.type] || "var(--accent)";
@@ -982,21 +985,13 @@ function createGroupCard(group) {
     : `S${seasons[0]}–S${seasons[seasons.length - 1]}`;
 
   const totalRuntime = items.reduce((s, it) => s + (Number(it.runtime) || 0), 0);
-  const firstDate = new Date(items[0].release_date);
-  const lastDate  = new Date(items[items.length - 1].release_date);
-  const dateRange = items.length === 1 || firstDate.getFullYear() === lastDate.getFullYear()
-    ? `${firstDate.getFullYear()}`
-    : `${firstDate.getFullYear()}–${lastDate.getFullYear()}`;
+  const startYear = (items[0]?.release_date || "").slice(0, 4);
+  const endYear = (items[items.length - 1]?.release_date || "").slice(0, 4);
+  const dateRange = (startYear && endYear && startYear === endYear) ? startYear : (startYear && endYear ? `${startYear}–${endYear}` : (startYear || endYear || ""));
 
-  const universes = [...new Set(items.map(it => String(it.multiverse)))];
-  let mvLabel;
-  if (universes.length === 1) {
-    const mvLabelFull = multiverseName(firstItem.multiverse);
-    const earthMatch  = mvLabelFull.match(/(Earth-[^\s(]+)/);
-    mvLabel = earthMatch ? earthMatch[1] : mvLabelFull;
-  } else {
-    mvLabel = "Multiverse";
-  }
+  const mvLabelFull = multiverseName(firstItem.multiverse);
+  const earthMatch  = mvLabelFull.match(/(Earth-[^\s(]+)/);
+  const mvLabel     = earthMatch ? earthMatch[1] : mvLabelFull;
 
   const card = document.createElement("div");
   card.className = `mcu-card group-card${expanded ? " is-expanded" : ""}`;
@@ -1100,6 +1095,7 @@ function createGroupCard(group) {
       localStorage.setItem(`watched_${it.id}`, !nowWatched);
       row.classList.toggle("is-watched", !nowWatched);
       toggle.checked = !nowWatched;
+      updateGroupBadge();
       renderBadge();
       updateStats();
       if (typeof window.updateJourneyUI === "function") {
