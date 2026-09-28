@@ -1,4 +1,14 @@
 /* ─── Apple-Style Premium Design Tokens ─── */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 :root {
   color-scheme: light;
   --bg: #f2f4f8;
@@ -478,6 +488,7 @@ body.print-mode .hero-bg-decorations {
 
 /* ─── Apple-Style Floating Top Deck ─── */
 .topbar {
+  view-transition-name: main-topbar;
   position: fixed;
   top: 20px;
   bottom: auto;
@@ -562,57 +573,79 @@ body.dark .brand-text strong {
 }
 
 .topbar-nav {
+  view-transition-name: main-topbar-nav;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 3px;
   flex-wrap: wrap;
-  background: rgba(134, 134, 139, 0.06);
+  background: rgba(134, 134, 139, 0.08);
   padding: 4px;
   border-radius: 999px;
-  border: 1.05px solid rgba(0, 0, 0, 0.015);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 body.dark .topbar-nav {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .topbar-nav a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 12px;
+  padding: 7px 14px;
   border-radius: 999px;
   text-decoration: none;
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--muted);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   border: 1px solid transparent;
   transform-origin: center center;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* macOS Dock Magnification Easing */
 .topbar-nav a:hover {
   color: var(--text);
-  background: rgba(134, 134, 139, 0.08);
-  transform: scale(1.08) translateY(2px);
+  background: rgba(134, 134, 139, 0.1);
+  transform: translateY(-1px);
 }
 body.dark .topbar-nav a:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.topbar-nav a:active {
+  transform: scale(0.97);
 }
 
 /* Apple-style Active Page Tab Indicator */
 .topbar-nav a[aria-current="page"] {
   background: #ffffff;
   color: #1d1d1f;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
   font-weight: 700;
+  cursor: default;
+}
+.topbar-nav a[aria-current="page"]:hover {
+  transform: none;
+  background: #ffffff;
+  color: #1d1d1f;
 }
 body.dark .topbar-nav a[aria-current="page"] {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.14);
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+body.dark .topbar-nav a[aria-current="page"]:hover {
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .topbar-nav a[data-coming-soon] {
@@ -1389,11 +1422,20 @@ body.dark .order-toggle {
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .order-toggle-option:hover {
   color: var(--text);
+}
+
+.order-toggle-option:active {
+  transform: scale(0.97);
 }
 
 .order-toggle-option[aria-pressed="true"] {

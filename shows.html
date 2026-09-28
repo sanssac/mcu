@@ -514,6 +514,19 @@
       link.addEventListener("click", e => e.preventDefault());
     });
 
+    document.querySelectorAll(".topbar-nav a[href]").forEach(link => {
+      const prefetch = () => {
+        const href = link.getAttribute("href");
+        if (!href || href.startsWith("#") || href.startsWith("http") || document.querySelector(`link[rel="prefetch"][href="${href}"]`)) return;
+        const prefetchLink = document.createElement("link");
+        prefetchLink.rel = "prefetch";
+        prefetchLink.href = href;
+        document.head.appendChild(prefetchLink);
+      };
+      link.addEventListener("mouseenter", prefetch, { once: true });
+      link.addEventListener("touchstart", prefetch, { once: true, passive: true });
+    });
+
     load();
   </script>
 </body>

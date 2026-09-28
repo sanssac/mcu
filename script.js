@@ -505,22 +505,58 @@ async function loadData() {
   restoreFilterState();
   renderList(filteredData());
 
+  const smoothRenderList = () => {
+    const list = document.getElementById("list");
+    if (list) {
+      list.style.transition = "opacity 0.15s ease, transform 0.15s ease";
+      list.style.opacity = "0.5";
+      list.style.transform = "translateY(3px)";
+      requestAnimationFrame(() => {
+        renderList(filteredData());
+        requestAnimationFrame(() => {
+          list.style.opacity = "1";
+          list.style.transform = "translateY(0)";
+        });
+      });
+    } else {
+      renderList(filteredData());
+    }
+  };
+
   document.querySelectorAll("[data-sort-mode]").forEach(button => {
     button.addEventListener("click", () => {
-      sortMode = normalizeSortMode(button.dataset.sortMode);
+      const newMode = normalizeSortMode(button.dataset.sortMode);
+      if (newMode === sortMode) return;
+      sortMode = newMode;
       updateSortControls();
       saveFilterState();
-      renderList(filteredData());
+      smoothRenderList();
     });
   });
 
   document.querySelectorAll("[data-sort-direction]").forEach(button => {
     button.addEventListener("click", () => {
-      sortDirection = normalizeSortDirection(button.dataset.sortDirection);
+      const newDir = normalizeSortDirection(button.dataset.sortDirection);
+      if (newDir === sortDirection) return;
+      sortDirection = newDir;
       updateSortControls();
       saveFilterState();
-      renderList(filteredData());
+      smoothRenderList();
     });
+  });
+
+  // Instant speculative prefetch for topbar navigation tabs
+  document.querySelectorAll(".topbar-nav a[href]").forEach(link => {
+    const prefetch = () => {
+      const href = link.getAttribute("href");
+      if (!href || href.startsWith("#") || href.startsWith("http") || document.querySelector(`link[rel="prefetch"][href="${href}"]`)) return;
+      const prefetchLink = document.createElement("link");
+      prefetchLink.rel = "prefetch";
+      prefetchLink.href = href;
+      document.head.appendChild(prefetchLink);
+    };
+    link.addEventListener("mouseenter", prefetch, { once: true });
+    link.addEventListener("touchstart", prefetch, { once: true, passive: true });
   });
 
   document.getElementById("printBtn")?.addEventListener("click", () => {
