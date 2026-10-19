@@ -38,7 +38,7 @@
   <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png">
 
   <!-- Dark Mode Inline Flash Prevention Script -->
-  <script>(function () { var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'); if (t === 'dark') { document.documentElement.classList.add('dark'); var m = document.getElementById('theme-color-meta'); if (m) m.content = '#08090e'; } })()</script>
+  <script>(function () { try { var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'); if (t === 'dark') { document.documentElement.classList.add('dark'); var m = document.getElementById('theme-color-meta'); if (m) m.content = '#08090e'; } var mood = localStorage.getItem('mcu_mood_theme'); if (mood && mood !== 'classic') { document.documentElement.classList.add('theme-' + mood); } } catch(e) {} })()</script>
 
   <!-- Google Fonts & Stylesheet -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

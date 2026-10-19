@@ -721,6 +721,9 @@ body.dark .topbar-nav a[aria-current="page"]:hover {
   right: 0;
   z-index: 100;
   width: min(320px, calc(100vw - 32px));
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 10px;
   border-radius: var(--radius-xl);
   border: 1px solid var(--border);
@@ -3637,7 +3640,7 @@ body.dark .group-watched-badge.is-complete { color: #4ade80; }
    MCU Nexus Upgrades: Mood Themes, Dashboards, Journals, and mini-map
    ========================================================================== */
 
-body.theme-stark {
+:is(html, body).theme-stark {
   --bg: #060508;
   --page-background-color: #060508;
   --page-background: 
@@ -3667,7 +3670,7 @@ body.theme-stark {
   background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 80px 80px, 80px 80px, 100% 100%;
 }
 
-body.theme-tva {
+:is(html, body).theme-tva {
   --bg: #0e0a06;
   --page-background-color: #0e0a06;
   --page-background: 
@@ -3697,7 +3700,7 @@ body.theme-tva {
   background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 54px 54px, 54px 54px, 100% 100%;
 }
 
-body.theme-wakanda {
+:is(html, body).theme-wakanda {
   --bg: #06040c;
   --page-background-color: #06040c;
   --page-background: 
@@ -3727,7 +3730,7 @@ body.theme-wakanda {
   background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 64px 64px, 64px 64px, 100% 100%;
 }
 
-body.theme-sorcerer {
+:is(html, body).theme-sorcerer {
   --bg: #020806;
   --page-background-color: #020806;
   --page-background: 
@@ -3757,7 +3760,7 @@ body.theme-sorcerer {
   background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 72px 72px, 72px 72px, 100% 100%;
 }
 
-body.theme-spiderman {
+:is(html, body).theme-spiderman {
   --bg: #05070e;
   --page-background-color: #05070e;
   --page-background: 
@@ -3787,7 +3790,7 @@ body.theme-spiderman {
   background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 64px 64px, 64px 64px, 100% 100%;
 }
 
-body.theme-captain {
+:is(html, body).theme-captain {
   --bg: #04060d;
   --page-background-color: #04060d;
   --page-background: 

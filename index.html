@@ -17,8 +17,23 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
   <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png">
-  <meta name="apple-mobile-web-app-title" content="MCU Order">
-  <script>(function () { var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'); if (t === 'dark') { document.documentElement.classList.add('dark'); } var s = localStorage.getItem('theme'); if (s) { var l = document.getElementById('theme-color-light'), d = document.getElementById('theme-color-dark'); if (l) l.media = s === 'dark' ? 'not all' : 'all'; if (d) d.media = s === 'dark' ? 'all' : 'not all'; } })()</script>
+  <script>(function () {
+    try {
+      var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+      if (t === 'dark') { document.documentElement.classList.add('dark'); }
+      var m = localStorage.getItem('mcu_mood_theme');
+      if (m && m !== 'classic') {
+        document.documentElement.classList.add('theme-' + m);
+        if (t !== 'dark') document.documentElement.classList.add('dark');
+      }
+      var s = localStorage.getItem('theme');
+      if (s) {
+        var l = document.getElementById('theme-color-light'), d = document.getElementById('theme-color-dark');
+        if (l) l.media = s === 'dark' ? 'not all' : 'all';
+        if (d) d.media = s === 'dark' ? 'all' : 'not all';
+      }
+    } catch (e) {}
+  })()</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
@@ -296,7 +311,7 @@
 
         <div class="control-actions">
           <div class="filter-dropdown filters-dropdown">
-            <button class="filter-pill filters-pill" id="filtersBtn" type="button" aria-label="Filters">
+            <button class="filter-pill filters-pill" id="filtersBtn" type="button" aria-label="Filters" aria-expanded="false" aria-controls="filtersPanel">
               <span class="btn-label">Filters</span>
               <span class="filter-count" hidden></span>
               <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor"
@@ -350,7 +365,7 @@
           </div>
 
           <div class="filter-dropdown sort-dropdown">
-            <button class="filter-pill sort-filter-pill" id="sortFilterBtn" type="button" aria-label="View: Old to New">
+            <button class="filter-pill sort-filter-pill" id="sortFilterBtn" type="button" aria-label="View: Old to New" aria-expanded="false" aria-controls="sortFilter">
               <span class="btn-label">View</span>
               <span class="sort-summary" aria-hidden="true">Old → New</span>
               <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor"

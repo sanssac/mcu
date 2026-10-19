@@ -1,3 +1,51 @@
+const safeStorage = {
+  get(key, fallback = null) {
+    try {
+      const val = localStorage.getItem(key);
+      return val !== null ? val : fallback;
+    } catch {
+      return fallback;
+    }
+  },
+  getJSON(key, fallback = null) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      const parsed = JSON.parse(raw);
+      return parsed !== null && parsed !== undefined ? parsed : fallback;
+    } catch {
+      return fallback;
+    }
+  },
+  set(key, value) {
+    try {
+      localStorage.setItem(key, typeof value === "object" ? JSON.stringify(value) : String(value));
+      return true;
+    } catch (e) {
+      console.warn("safeStorage set failed:", e);
+      return false;
+    }
+  },
+  remove(key) {
+    try {
+      localStorage.removeItem(key);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  isWatched(id) {
+    return safeStorage.get(`watched_${id}`) === "true";
+  },
+  setWatched(id, watched) {
+    if (watched) {
+      return safeStorage.set(`watched_${id}`, "true");
+    } else {
+      return safeStorage.remove(`watched_${id}`);
+    }
+  }
+};
+
 let fullData = [];
 let sortMode = "release";
 let sortDirection = "asc";
@@ -380,14 +428,14 @@ function setViewMode(mode, { save = false } = {}) {
 
 function saveFilterState({ updateUrl = true } = {}) {
   const state = getFilterState();
-  localStorage.setItem("filter_search",     state.search);
-  localStorage.setItem("filter_type",       JSON.stringify(state.typeVals));
-  localStorage.setItem("filter_canon",      JSON.stringify(state.canonVals));
-  localStorage.setItem("filter_multiverse", JSON.stringify(state.mvVals));
-  localStorage.setItem("filter_sort",       state.sortMode);
-  localStorage.setItem("filter_sortDirection", state.sortDirection);
-  localStorage.setItem("filter_hideWatched", state.hideWatched);
-  localStorage.setItem("filter_viewMode",   state.viewMode);
+  safeStorage.set("filter_search",        state.search);
+  safeStorage.set("filter_type",          state.typeVals);
+  safeStorage.set("filter_canon",         state.canonVals);
+  safeStorage.set("filter_multiverse",    state.mvVals);
+  safeStorage.set("filter_sort",          state.sortMode);
+  safeStorage.set("filter_sortDirection", state.sortDirection);
+  safeStorage.set("filter_hideWatched",   String(state.hideWatched));
+  safeStorage.set("filter_viewMode",      state.viewMode);
   if (updateUrl) updateUrlFromState(state);
 }
 
@@ -416,29 +464,26 @@ function updateSortControls() {
 
 function restoreFilterState() {
   const restore = (storageKey, panelSelector) => {
-    const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
-    saved.forEach(val => {
-      const cb = document.querySelector(`${panelSelector} input[value=${CSS.escape(val)}]`);
-      if (cb) cb.checked = true;
-    });
+    const saved = safeStorage.getJSON(storageKey, []);
+    setPanelValues(panelSelector, Array.isArray(saved) ? saved : []);
   };
   restore("filter_type",       "#typeFilter");
   restore("filter_canon",      "#canonFilter");
   restore("filter_multiverse", "#multiverseFilter");
-  setSearchValue(localStorage.getItem("filter_search") || "");
+  setSearchValue(safeStorage.get("filter_search", ""));
 
-  const savedSort = localStorage.getItem("filter_sort");
+  const savedSort = safeStorage.get("filter_sort");
   if (savedSort) {
     sortMode = normalizeSortMode(savedSort);
   }
-  sortDirection = normalizeSortDirection(localStorage.getItem("filter_sortDirection") || "asc");
+  sortDirection = normalizeSortDirection(safeStorage.get("filter_sortDirection", "asc"));
 
-  const savedHide = localStorage.getItem("filter_hideWatched");
+  const savedHide = safeStorage.get("filter_hideWatched");
   if (savedHide !== null) {
     const hideEl = document.getElementById("hideWatched");
     if (hideEl) hideEl.checked = savedHide === "true";
   }
-  setViewMode(localStorage.getItem("filter_viewMode") || "comfortable");
+  setViewMode(safeStorage.get("filter_viewMode", "comfortable"));
 
   const params = new URLSearchParams(window.location.search);
   if (hasUrlFilterState(params)) {
@@ -633,6 +678,7 @@ async function loadData() {
     ).forEach(cb => cb.checked = false);
     syncFilterSubmenus();
     saveFilterState();
+    updateClearAllVisibility();
     renderList(filteredData());
   });
 
@@ -922,12 +968,13 @@ function getPosterVisualHtml(item) {
 function createSingleCard(item) {
   const card = document.createElement("div");
   card.classList.add("mcu-card");
+  card.setAttribute("data-id", item.id);
 
   if (activeJourney && matchesJourney(item, activeJourney)) {
     card.classList.add("card-journey-match");
   }
 
-  const checked = localStorage.getItem(`watched_${item.id}`) === "true";
+  const checked = safeStorage.isWatched(item.id);
   if (checked) card.classList.add("is-watched");
 
   const color = MV_TINTS[String(item.multiverse)];
@@ -974,7 +1021,7 @@ function createSingleCard(item) {
         ${epBadge}
       </div>
       <div class="card-top-actions">
-        <label class="watched-checkbox-label" title="Toggle Watched Status" onclick="event.stopPropagation();">
+        <label class="watched-checkbox-label" title="Toggle Watched Status">
           <input type="checkbox" class="watched-toggle" ${checked ? "checked" : ""} data-id="${item.id}" aria-label="Mark as watched">
           <span class="watched-custom-ring"></span>
         </label>
@@ -996,10 +1043,37 @@ function createSingleCard(item) {
     link.addEventListener("click", event => event.stopPropagation());
   });
 
-  card.addEventListener("click", () => {
-    const isWatched = localStorage.getItem(`watched_${item.id}`) === "true";
-    localStorage.setItem(`watched_${item.id}`, !isWatched);
-    renderList(filteredData());
+  const checkbox = card.querySelector(".watched-toggle");
+  const toggleWatched = () => {
+    const isWatched = safeStorage.isWatched(item.id);
+    const nextWatched = !isWatched;
+    safeStorage.setWatched(item.id, nextWatched);
+    card.classList.toggle("is-watched", nextWatched);
+    if (checkbox) checkbox.checked = nextWatched;
+    updateStats();
+    if (typeof window.updateJourneyUI === "function") {
+      window.updateJourneyUI();
+    }
+    const hideWatched = document.getElementById("hideWatched")?.checked === true;
+    if (hideWatched) {
+      renderList(filteredData());
+    } else {
+      updateNextUpBanner(filteredData());
+    }
+  };
+
+  const checkboxLabel = card.querySelector(".watched-checkbox-label");
+  if (checkboxLabel) {
+    checkboxLabel.addEventListener("click", e => {
+      e.stopPropagation();
+      e.preventDefault();
+      toggleWatched();
+    });
+  }
+
+  card.addEventListener("click", e => {
+    if (e.target.closest("a, button")) return;
+    toggleWatched();
   });
 
   return card;
@@ -1031,6 +1105,7 @@ function createGroupCard(group) {
 
   const card = document.createElement("div");
   card.className = `mcu-card group-card${expanded ? " is-expanded" : ""}`;
+  card.setAttribute("data-group-show", group.show);
   if (activeJourney && items.some(it => matchesJourney(it, activeJourney))) {
     card.classList.add("card-journey-match");
   }
@@ -1038,7 +1113,7 @@ function createGroupCard(group) {
   if (studioColor) card.style.setProperty("--studio-color", studioColor);
   card.setAttribute("data-phase", getItemPhase(firstItem));
 
-  const watchedCount = () => items.filter(it => localStorage.getItem(`watched_${it.id}`) === "true").length;
+  const watchedCount = () => items.filter(it => safeStorage.isWatched(it.id)).length;
   const updateGroupBadge = () => {
     const wc = watchedCount();
     const badge = card.querySelector(".group-watched-badge");
@@ -1086,9 +1161,10 @@ function createGroupCard(group) {
   if (!expanded) epList.hidden = true;
 
   items.forEach(it => {
-    const isWatched = localStorage.getItem(`watched_${it.id}`) === "true";
+    const isWatched = safeStorage.isWatched(it.id);
     const row = document.createElement("div");
     row.className = `episode-row${isWatched ? " is-watched" : ""}`;
+    row.setAttribute("data-id", it.id);
     if (activeJourney && matchesJourney(it, activeJourney)) {
       row.classList.add("row-journey-match");
     }
@@ -1125,19 +1201,51 @@ function createGroupCard(group) {
     if (sourceLink) row.appendChild(sourceLink);
     row.appendChild(toggle);
 
-    row.addEventListener("click", e => {
-      e.stopPropagation();
-      const nowWatched = localStorage.getItem(`watched_${it.id}`) === "true";
-      localStorage.setItem(`watched_${it.id}`, !nowWatched);
-      row.classList.toggle("is-watched", !nowWatched);
-      toggle.checked = !nowWatched;
+    const toggleEpisode = () => {
+      const nowWatched = safeStorage.isWatched(it.id);
+      const nextWatched = !nowWatched;
+      safeStorage.setWatched(it.id, nextWatched);
+      row.classList.toggle("is-watched", nextWatched);
+      toggle.checked = nextWatched;
       updateGroupBadge();
-      renderBadge();
       updateStats();
       if (typeof window.updateJourneyUI === "function") {
         window.updateJourneyUI();
       }
-      updateNextUpBanner(filteredData());
+      const hideWatched = document.getElementById("hideWatched")?.checked === true;
+      if (hideWatched) {
+        renderList(filteredData());
+      } else {
+        updateNextUpBanner(filteredData());
+      }
+    };
+
+    row.addEventListener("click", e => {
+      if (e.target.closest("a")) return;
+      e.stopPropagation();
+      toggleEpisode();
+    });
+
+    toggle.addEventListener("click", e => {
+      e.stopPropagation();
+    });
+
+    toggle.addEventListener("change", e => {
+      e.stopPropagation();
+      const nextWatched = toggle.checked;
+      safeStorage.setWatched(it.id, nextWatched);
+      row.classList.toggle("is-watched", nextWatched);
+      updateGroupBadge();
+      updateStats();
+      if (typeof window.updateJourneyUI === "function") {
+        window.updateJourneyUI();
+      }
+      const hideWatched = document.getElementById("hideWatched")?.checked === true;
+      if (hideWatched) {
+        renderList(filteredData());
+      } else {
+        updateNextUpBanner(filteredData());
+      }
     });
 
     epList.appendChild(row);
@@ -1166,6 +1274,10 @@ mobileQuery.addEventListener("change", () => renderList(filteredData()));
 
 function renderList(data) {
   const list = document.getElementById("list");
+  if (!list) return;
+
+  const prevScrollY = window.scrollY;
+
   list.innerHTML = "";
 
   const groups = (mobileQuery.matches && viewMode !== "list")
@@ -1192,6 +1304,10 @@ function renderList(data) {
   });
   flushSingles();
 
+  if (Math.abs(window.scrollY - prevScrollY) > 5) {
+    window.scrollTo({ top: prevScrollY, behavior: "instant" });
+  }
+
   updateStats();
   updateFilterButtons();
   if (typeof window.updateJourneyUI === "function") {
@@ -1201,7 +1317,8 @@ function renderList(data) {
 }
 
 function formatRuntime(minutes) {
-  const totalSeconds = Math.round(minutes * 60);
+  const safeMins = Math.max(0, Number(minutes) || 0);
+  const totalSeconds = Math.round(safeMins * 60);
   const days  = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const mins  = Math.floor((totalSeconds % 3600) / 60);
@@ -1243,7 +1360,7 @@ function renderPhaseProgress() {
     const p = getItemPhase(item);
     if (counts[p]) {
       counts[p].total++;
-      if (localStorage.getItem(`watched_${item.id}`) === "true") {
+      if (safeStorage.isWatched(item.id)) {
         counts[p].watched++;
       }
     }
@@ -1269,15 +1386,15 @@ function renderPhaseProgress() {
   }
 
   const badgeIronMan = ["captain_america_the_first_avenger", "captain_marvel", "iron_man"].every(
-    id => localStorage.getItem(`watched_${id}`) === "true"
+    id => safeStorage.isWatched(id)
   );
 
   const badgeAvengers = ["avengers", "avengers_age_of_ultron", "avengers_infinity_war", "avengers_endgame"].every(
-    id => localStorage.getItem(`watched_${id}`) === "true"
+    id => safeStorage.isWatched(id)
   );
 
   const watchedMultiverseCount = fullData.filter(
-    item => item.multiverse !== 0 && localStorage.getItem(`watched_${item.id}`) === "true"
+    item => item.multiverse !== 0 && safeStorage.isWatched(item.id)
   ).length;
   const badgeMultiverse = watchedMultiverseCount >= 5;
 
@@ -1288,7 +1405,7 @@ function renderPhaseProgress() {
   const badgeInfinity = totalInfinity > 0 && watchedInfinity === totalInfinity;
 
   const totalAll = fullData.length;
-  const watchedAll = fullData.filter(item => localStorage.getItem(`watched_${item.id}`) === "true").length;
+  const watchedAll = fullData.filter(item => safeStorage.isWatched(item.id)).length;
   const badgeWatcher = totalAll > 0 && watchedAll === totalAll;
 
   const updateBadgeClass = (id, unlocked) => {
@@ -1305,32 +1422,34 @@ function renderPhaseProgress() {
 }
 
 function updateStats() {
-  const watchedItems    = fullData.filter(item => localStorage.getItem(`watched_${item.id}`) === "true");
-  const totalRuntime    = fullData.reduce((s, item) => s + item.runtime, 0);
-  const watchedRuntime  = watchedItems.reduce((s, item) => s + item.runtime, 0);
-  const percent         = totalRuntime ? Math.round((watchedRuntime / totalRuntime) * 100) : 0;
+  const watchedItems    = fullData.filter(item => safeStorage.isWatched(item.id));
+  const totalRuntime    = fullData.reduce((s, item) => s + (Number(item.runtime) || 0), 0);
+  const watchedRuntime  = watchedItems.reduce((s, item) => s + (Number(item.runtime) || 0), 0);
+  const remainingRuntime = Math.max(0, totalRuntime - watchedRuntime);
+  const percent         = totalRuntime ? Math.min(100, Math.round((watchedRuntime / totalRuntime) * 100)) : 0;
 
-  const el = id => document.getElementById(id);
-  el("stat-percent").textContent       = `${percent}%`;
-  el("stat-time").textContent          = formatRuntimeShort(watchedRuntime);
-  el("stat-time-remaining").textContent = formatRuntimeShort(totalRuntime - watchedRuntime);
-  el("progressBar").style.width        = `${percent}%`;
+  const setEl = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+
+  setEl("stat-percent", `${percent}%`);
+  setEl("stat-time", formatRuntimeShort(watchedRuntime));
+  setEl("stat-time-remaining", formatRuntimeShort(remainingRuntime));
+
+  const progressBar = document.getElementById("progressBar");
+  if (progressBar) progressBar.style.width = `${percent}%`;
 
   // Bind to compact floating progress pill
-  const pillPercent = el("floating-pill-percent");
-  const pillTime = el("floating-pill-time");
-  if (pillPercent) {
-    pillPercent.textContent = `${percent}%`;
-  }
-  if (pillTime) {
-    pillTime.textContent = `${formatRuntimeShort(totalRuntime - watchedRuntime)} left`;
-  }
+  setEl("floating-pill-percent", `${percent}%`);
+  setEl("floating-pill-time", `${formatRuntimeShort(remainingRuntime)} left`);
 
   renderPhaseProgress();
 }
 
 function formatRuntimeShort(minutes) {
-  const totalSeconds = Math.round(minutes * 60);
+  const safeMins = Math.max(0, Number(minutes) || 0);
+  const totalSeconds = Math.round(safeMins * 60);
   const days  = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const mins  = Math.floor((totalSeconds % 3600) / 60);
@@ -1342,7 +1461,7 @@ function formatRuntimeShort(minutes) {
 }
 
 function getProgressStats(items = fullData) {
-  const watchedItems = items.filter(item => localStorage.getItem(`watched_${item.id}`) === "true");
+  const watchedItems = items.filter(item => safeStorage.isWatched(item.id));
   const totalRuntime = items.reduce((s, item) => s + (Number(item.runtime) || 0), 0);
   const watchedRuntime = watchedItems.reduce((s, item) => s + (Number(item.runtime) || 0), 0);
 
@@ -1441,15 +1560,16 @@ function matchesSearchQuery(item, query) {
 
 function filteredData() {
   const query       = (document.getElementById("search")?.value || "").toLowerCase().trim();
-  const hideWatched = document.getElementById("hideWatched")?.checked;
+  const hideWatched = document.getElementById("hideWatched")?.checked === true;
   const typeVals    = Array.from(document.querySelectorAll("#typeFilter input:checked")).map(c => c.value);
   const canonVals   = Array.from(document.querySelectorAll("#canonFilter input:checked")).map(c => c.value);
   const mvVals      = Array.from(multiverseFilterInputs(":checked")).map(c => c.value);
 
   return fullData.filter(item => {
-    const isWatched  = localStorage.getItem(`watched_${item.id}`) === "true";
+    const isWatched  = safeStorage.isWatched(item.id);
     const typeMatch  = typeVals.length  === 0 || typeVals.includes(item.type);
-    const canonMatch = canonVals.length === 0 || canonVals.includes(String(item.canon));
+    const itemCanonStr = (item.canon === true || item.canon === "true") ? "true" : "false";
+    const canonMatch = canonVals.length === 0 || canonVals.includes(itemCanonStr);
     const mvMatch    = mvVals.length    === 0 || mvVals.includes(String(item.multiverse));
     const journeyMatch = !activeJourney || matchesJourney(item, activeJourney);
     
@@ -1525,7 +1645,7 @@ function createPrintSummaryCard(label, value) {
 }
 
 function createPrintRow(item, index) {
-  const watched = localStorage.getItem(`watched_${item.id}`) === "true";
+  const watched = safeStorage.isWatched(item.id);
   const row = document.createElement("div");
   row.className = `print-row${watched ? " is-watched" : ""}`;
   row.style.setProperty(
@@ -1648,6 +1768,7 @@ function initFilterDropdowns() {
       if (!isOpen) {
         panel.classList.remove("hidden");
         btn.classList.add("open");
+        btn.setAttribute("aria-expanded", "true");
         if (panel.id === "filtersPanel") setTimeout(matchMultiverseHeight, 0);
       }
     });
@@ -1664,7 +1785,10 @@ function initFilterDropdowns() {
 
 function closeAllDropdowns() {
   document.querySelectorAll(".filter-dropdown-panel").forEach(p => p.classList.add("hidden"));
-  document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("open"));
+  document.querySelectorAll(".filter-pill").forEach(b => {
+    b.classList.remove("open");
+    b.setAttribute("aria-expanded", "false");
+  });
 }
 
 function matchMultiverseHeight() {
@@ -1693,13 +1817,13 @@ const applyTheme = (theme) => {
   const dark  = document.getElementById("theme-color-dark");
   if (light) { light.media = theme === "dark" ? "not all" : "all"; light.content = "#eef1f6"; }
   if (dark)  { dark.media  = theme === "dark" ? "all" : "not all"; dark.content  = "#090b10"; }
-  localStorage.setItem("theme", theme);
+  safeStorage.set("theme", theme);
   if (theme === "light") {
     applyMoodTheme("classic");
   }
 };
 
-const storedTheme = localStorage.getItem("theme");
+const storedTheme = safeStorage.get("theme");
 const preferredScheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 applyTheme(storedTheme || preferredScheme);
 
@@ -1709,15 +1833,35 @@ function toggleTheme() {
 }
 
 function applyMoodTheme(mood) {
+  const validMoods = ["classic", "stark", "captain", "spiderman", "tva", "wakanda", "sorcerer"];
+  if (!validMoods.includes(mood)) mood = "classic";
+
   document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer", "theme-captain", "theme-spiderman");
+  document.documentElement.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer", "theme-captain", "theme-spiderman");
+
   if (mood && mood !== "classic") {
     document.body.classList.add(`theme-${mood}`);
+    document.documentElement.classList.add(`theme-${mood}`);
     if (!document.body.classList.contains("dark")) {
       applyTheme("dark");
     }
   }
-  localStorage.setItem("mcu_mood_theme", mood);
-  
+  safeStorage.set("mcu_mood_theme", mood);
+
+  const themeColors = {
+    classic: "#090b10",
+    stark: "#060508",
+    tva: "#0e0a06",
+    wakanda: "#06040c",
+    sorcerer: "#020806",
+    spiderman: "#05070e",
+    captain: "#04060d"
+  };
+  const darkMeta = document.getElementById("theme-color-dark");
+  if (darkMeta && document.body.classList.contains("dark")) {
+    darkMeta.content = themeColors[mood] || "#090b10";
+  }
+
   // Update all dot states
   document.querySelectorAll(".theme-dot").forEach(dot => {
     dot.classList.toggle("active", dot.getAttribute("data-theme") === mood);
@@ -1729,13 +1873,17 @@ function applyMoodTheme(mood) {
   const titleEl = document.getElementById("floating-theme-title");
   if (emojiEl) emojiEl.textContent = details.emoji;
   if (titleEl) titleEl.textContent = details.name;
+
+  if (typeof window.onMoodThemeChange === "function") {
+    window.onMoodThemeChange();
+  }
 }
 
-const savedMood = localStorage.getItem("mcu_mood_theme") || "classic";
+const savedMood = safeStorage.get("mcu_mood_theme", "classic");
 applyMoodTheme(savedMood);
 
 document.querySelectorAll(".theme-dot").forEach(dot => {
-  dot.addEventListener("click", event => {
+  dot.addEventListener("click", () => {
     applyMoodTheme(dot.getAttribute("data-theme"));
   });
 });
@@ -1778,36 +1926,125 @@ document.querySelectorAll("[data-coming-soon]").forEach(link => {
   });
 });
 
+// ─── Focus trapping helper ───
+function trapModalFocus(modalElement, onEscapeCallback) {
+  const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  const handleKeydown = (e) => {
+    if (e.key === "Escape") {
+      if (typeof onEscapeCallback === "function") onEscapeCallback();
+      return;
+    }
+    if (e.key !== "Tab") return;
+
+    const focusables = Array.from(modalElement.querySelectorAll(focusableSelectors)).filter(
+      el => !el.hidden && el.offsetParent !== null && !el.disabled
+    );
+    if (focusables.length === 0) {
+      e.preventDefault();
+      return;
+    }
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
+  modalElement.addEventListener("keydown", handleKeydown);
+  return () => modalElement.removeEventListener("keydown", handleKeydown);
+}
+
 // ─── Progress export / import ───
 function encodeProgress() {
-  const bytes = new Uint8Array(Math.ceil(fullData.length / 8));
-  fullData.forEach((item, i) => {
-    if (localStorage.getItem(`watched_${item.id}`) === "true") {
-      bytes[Math.floor(i / 8)] |= 1 << (i % 8);
-    }
-  });
-  return btoa(String.fromCharCode(...bytes));
+  const watched = fullData.filter(item => safeStorage.isWatched(item.id)).map(item => item.id);
+  const stats = getProgressStats(fullData);
+  const payload = {
+    v: 2,
+    app: "MCU_NEXUS",
+    ts: Date.now(),
+    stats: {
+      watchedCount: watched.length,
+      totalCount: fullData.length,
+      watchedRuntime: stats.watchedRuntime,
+      totalRuntime: stats.totalRuntime,
+      percent: stats.percent
+    },
+    watched
+  };
+  return "MCUNEXUS:v2:" + btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 }
 
 function decodeProgress(code) {
-  let bytes;
+  if (!code || typeof code !== "string") return false;
+  const cleanCode = code.trim();
+  if (!cleanCode) return false;
+
+  // 1. Check v2 structured format or raw JSON
+  let watchedIds = null;
+  if (cleanCode.startsWith("MCUNEXUS:v2:")) {
+    try {
+      const jsonStr = decodeURIComponent(escape(atob(cleanCode.slice(12))));
+      const payload = JSON.parse(jsonStr);
+      if (payload && Array.isArray(payload.watched)) {
+        watchedIds = payload.watched;
+      }
+    } catch {
+      return false;
+    }
+  } else if (cleanCode.startsWith("{") && cleanCode.endsWith("}")) {
+    try {
+      const payload = JSON.parse(cleanCode);
+      if (payload && Array.isArray(payload.watched)) {
+        watchedIds = payload.watched;
+      } else if (payload && Array.isArray(payload.w)) {
+        watchedIds = payload.w;
+      }
+    } catch {
+      return false;
+    }
+  }
+
+  if (watchedIds !== null) {
+    const watchedSet = new Set(watchedIds);
+    fullData.forEach(item => {
+      safeStorage.setWatched(item.id, watchedSet.has(item.id));
+    });
+    return true;
+  }
+
+  // 2. Legacy Base64 bitmask fallback
   try {
-    bytes = Uint8Array.from(atob(code.trim()), c => c.charCodeAt(0));
+    const binaryStr = atob(cleanCode);
+    const expectedBytes = Math.ceil(fullData.length / 8);
+    // Legacy bitmask must match expected byte length (at least 80 bytes for 739 items)
+    if (binaryStr.length < Math.max(1, expectedBytes - 10) || binaryStr.length > expectedBytes + 15) {
+      return false;
+    }
+    const bytes = Uint8Array.from(binaryStr, c => c.charCodeAt(0));
+    fullData.forEach((item, i) => {
+      const byteIdx = Math.floor(i / 8);
+      const watched = byteIdx < bytes.length ? (bytes[byteIdx] >> (i % 8)) & 1 : 0;
+      safeStorage.setWatched(item.id, Boolean(watched));
+    });
+    return true;
   } catch {
     return false;
   }
-  fullData.forEach((item, i) => {
-    const watched = (bytes[Math.floor(i / 8)] >> (i % 8)) & 1;
-    if (watched) {
-      localStorage.setItem(`watched_${item.id}`, "true");
-    } else {
-      localStorage.removeItem(`watched_${item.id}`);
-    }
-  });
-  return true;
 }
 
+let lastFocusedElementBeforeModal = null;
+let progressModalTrapCleanup = null;
+
 function openProgressModal(mode) {
+  lastFocusedElementBeforeModal = document.activeElement;
   const modal = document.getElementById("progressModal");
   const title = document.getElementById("progressModalTitle");
   const exportContent = document.getElementById("exportContent");
@@ -1819,17 +2056,38 @@ function openProgressModal(mode) {
 
   if (mode === "export") {
     document.getElementById("progressCode").value = encodeProgress();
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    setTimeout(() => {
+      document.getElementById("copyCodeBtn")?.focus();
+    }, 50);
   } else {
-    document.getElementById("importCode").value = "";
+    const importInput = document.getElementById("importCode");
+    importInput.value = "";
+    importInput.setCustomValidity("");
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    setTimeout(() => {
+      importInput.focus();
+    }, 50);
   }
 
-  modal.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
+  if (progressModalTrapCleanup) progressModalTrapCleanup();
+  progressModalTrapCleanup = trapModalFocus(modal, closeProgressModal);
 }
 
 function closeProgressModal() {
-  document.getElementById("progressModal").classList.add("hidden");
+  const modal = document.getElementById("progressModal");
+  if (!modal) return;
+  modal.classList.add("hidden");
   document.body.style.overflow = "";
+  if (progressModalTrapCleanup) {
+    progressModalTrapCleanup();
+    progressModalTrapCleanup = null;
+  }
+  if (lastFocusedElementBeforeModal && typeof lastFocusedElementBeforeModal.focus === "function") {
+    lastFocusedElementBeforeModal.focus();
+  }
 }
 
 document.getElementById("exportProgressBtn")?.addEventListener("click", () => {
@@ -1846,6 +2104,10 @@ document.querySelector(".progress-modal-close")?.addEventListener("click", close
 
 document.getElementById("progressModal")?.querySelector(".progress-modal-backdrop")?.addEventListener("click", closeProgressModal);
 
+document.getElementById("importCode")?.addEventListener("input", () => {
+  document.getElementById("importCode").setCustomValidity("");
+});
+
 document.getElementById("copyCodeBtn")?.addEventListener("click", () => {
   const textarea = document.getElementById("progressCode");
   navigator.clipboard.writeText(textarea.value).then(() => {
@@ -1856,10 +2118,11 @@ document.getElementById("copyCodeBtn")?.addEventListener("click", () => {
 });
 
 document.getElementById("applyCodeBtn")?.addEventListener("click", () => {
-  const code = document.getElementById("importCode").value;
+  const inputEl = document.getElementById("importCode");
+  const code = inputEl.value;
   if (!decodeProgress(code)) {
-    document.getElementById("importCode").setCustomValidity("Invalid code");
-    document.getElementById("importCode").reportValidity();
+    inputEl.setCustomValidity("Invalid or corrupted progress code. Please verify and try again.");
+    inputEl.reportValidity();
     return;
   }
   closeProgressModal();
@@ -1874,7 +2137,7 @@ function initDashboard() {
   if (!toggleHeader || !toggleBtn || !content) return;
 
   // Load saved state
-  const isCollapsed = localStorage.getItem("mcu_dashboard_collapsed") !== "false"; // default to collapsed
+  const isCollapsed = safeStorage.get("mcu_dashboard_collapsed") !== "false"; // default to collapsed
   if (isCollapsed) {
     content.classList.add("collapsed");
     toggleBtn.classList.remove("expanded");
@@ -1888,11 +2151,11 @@ function initDashboard() {
     if (currentlyCollapsed) {
       content.classList.remove("collapsed");
       toggleBtn.classList.add("expanded");
-      localStorage.setItem("mcu_dashboard_collapsed", "false");
+      safeStorage.set("mcu_dashboard_collapsed", "false");
     } else {
       content.classList.add("collapsed");
       toggleBtn.classList.remove("expanded");
-      localStorage.setItem("mcu_dashboard_collapsed", "true");
+      safeStorage.set("mcu_dashboard_collapsed", "true");
     }
   });
 
@@ -1956,6 +2219,8 @@ function showBadgeDetails(badgeId) {
   const badge = badgeMap[badgeId];
   if (!badge) return;
 
+  const previousActiveElement = document.activeElement;
+
   // Remove existing modal if any
   const existingModal = document.getElementById("badgeDetailModal");
   if (existingModal) {
@@ -1971,7 +2236,7 @@ function showBadgeDetails(badgeId) {
     const checklistData = badge.items.map(id => {
       const item = fullData.find(d => d.id === id);
       const title = item ? getDisplayTitle(item) : id;
-      const isWatched = localStorage.getItem("watched_" + id) === "true";
+      const isWatched = safeStorage.isWatched(id);
       return { title, isWatched };
     });
 
@@ -1995,7 +2260,7 @@ function showBadgeDetails(badgeId) {
   } else if (badge.type === "progress") {
     // Count stats
     const qualifyingItems = fullData.filter(badge.filterFn);
-    const watchedQualifying = qualifyingItems.filter(item => localStorage.getItem("watched_" + item.id) === "true");
+    const watchedQualifying = qualifyingItems.filter(item => safeStorage.isWatched(item.id));
 
     const totalCount = badge.targetCount !== undefined ? badge.targetCount : qualifyingItems.length;
     const watchedCount = watchedQualifying.length;
@@ -2040,6 +2305,7 @@ function showBadgeDetails(badgeId) {
   modal.id = "badgeDetailModal";
   modal.setAttribute("role", "dialog");
   modal.setAttribute("aria-modal", "true");
+  modal.setAttribute("aria-labelledby", "badgeDetailTitle");
 
   modal.innerHTML = `
     <div class="badge-detail-backdrop"></div>
@@ -2047,7 +2313,7 @@ function showBadgeDetails(badgeId) {
       <button class="badge-detail-close" aria-label="Close modal">&times;</button>
       <div class="badge-detail-header">
         <div class="badge-detail-icon-glow ${unlocked ? 'unlocked' : ''}">${badge.icon}</div>
-        <h3 class="badge-detail-name">${badge.name}</h3>
+        <h3 class="badge-detail-name" id="badgeDetailTitle">${badge.name}</h3>
         <span class="badge-detail-status-pill ${unlocked ? 'status-unlocked' : 'status-locked'}">
           ${unlocked ? '🔓 Unlocked' : '🔒 Locked'}
         </span>
@@ -2063,20 +2329,24 @@ function showBadgeDetails(badgeId) {
   `;
 
   document.body.appendChild(modal);
+  document.body.style.overflow = "hidden";
 
   // Trigger browser paint to transition in
   requestAnimationFrame(() => {
     modal.classList.add("active");
+    trapModalFocus(modal, previousActiveElement);
   });
 
   // Closing animation and removal
   const closeModal = () => {
+    document.body.style.overflow = "";
     modal.classList.remove("active");
     // Wait for transition to complete before removing from DOM
     modal.addEventListener("transitionend", function handler(e) {
       if (e.propertyName === "opacity") {
         modal.removeEventListener("transitionend", handler);
         modal.remove();
+        previousActiveElement?.focus();
       }
     }, { once: true });
     
@@ -2084,6 +2354,7 @@ function showBadgeDetails(badgeId) {
     setTimeout(() => {
       if (modal.parentNode) {
         modal.remove();
+        previousActiveElement?.focus();
       }
     }, 400);
   };
@@ -2100,36 +2371,41 @@ function initScrollMap() {
   const nodes = document.querySelectorAll(".scroll-map-node");
   if (!track) return;
 
-  // Scroll listener to update needle and active node
-  window.addEventListener("scroll", () => {
+  let ticking = false;
+
+  function updateScrollMap() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    const percent = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
     
     if (needle) {
       needle.style.top = `${percent}%`;
     }
 
-    // Viewport phase tracking: check which [data-phase] card is closest to the vertical center of the viewport
-    let cards = Array.from(document.querySelectorAll(".mcu-card[data-phase]"));
-    if (activeJourney) {
-      cards = cards.filter(card => card.classList.contains("card-journey-match"));
-    }
-    if (cards.length === 0) return;
-
-    let closestPhase = "";
-    let minDistance = Infinity;
+    // Viewport phase tracking with point hit test and minimal fallback
     const viewportCenter = window.innerHeight / 2;
+    const hitX = Math.min(window.innerWidth - 80, Math.max(80, window.innerWidth / 2));
+    const hitElement = document.elementFromPoint(hitX, viewportCenter);
+    let closestPhase = hitElement?.closest(".mcu-card[data-phase]")?.getAttribute("data-phase");
 
-    cards.forEach(card => {
-      const rect = card.getBoundingClientRect();
-      const cardCenter = rect.top + rect.height / 2;
-      const distance = Math.abs(cardCenter - viewportCenter);
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestPhase = card.getAttribute("data-phase");
+    if (!closestPhase) {
+      const phaseLabels = ["Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Phase 6"];
+      let minDistance = Infinity;
+      for (const pLabel of phaseLabels) {
+        const selector = activeJourney 
+          ? `.mcu-card.card-journey-match[data-phase="${pLabel}"]`
+          : `.mcu-card[data-phase="${pLabel}"]`;
+        const firstCard = document.querySelector(selector);
+        if (firstCard) {
+          const rect = firstCard.getBoundingClientRect();
+          const dist = Math.abs(rect.top - viewportCenter);
+          if (dist < minDistance) {
+            minDistance = dist;
+            closestPhase = pLabel;
+          }
+        }
       }
-    });
+    }
 
     if (closestPhase) {
       nodes.forEach(node => {
@@ -2137,7 +2413,18 @@ function initScrollMap() {
         node.classList.toggle("active", label === closestPhase);
       });
     }
-  });
+  }
+
+  // Scroll listener to update needle and active node with requestAnimationFrame
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateScrollMap();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
 
   // Global smooth scroll anchor lookup
   window.scrollToPhase = function(phaseNum) {
@@ -2246,9 +2533,9 @@ function initJourneyTracker() {
       if (activeJourney) {
         const journeyItems = fullData.filter(item => matchesJourney(item, activeJourney));
         const total = journeyItems.length;
-        const watched = journeyItems.filter(item => localStorage.getItem(`watched_${item.id}`) === "true").length;
+        const watched = journeyItems.filter(item => safeStorage.isWatched(item.id)).length;
         const unwatchedRuntime = journeyItems
-          .filter(item => localStorage.getItem(`watched_${item.id}`) !== "true")
+          .filter(item => !safeStorage.isWatched(item.id))
           .reduce((sum, item) => sum + (Number(item.runtime) || 0), 0);
         const timeStr = formatRuntimeLong(unwatchedRuntime);
         const journeyNames = {
@@ -2333,7 +2620,14 @@ function updateNextUpBanner(data) {
     return;
   }
 
-  const nextUnwatched = data.find(item => localStorage.getItem(`watched_${item.id}`) !== "true");
+  // Sort candidates in ascending watch order (chronological or release) so descending sort won't break Next Up
+  const viewingCandidates = [...data].sort((a, b) => {
+    const aVal = sortMode === "chronological" ? (a.chronological ?? a.order ?? 0) : (a.order ?? 0);
+    const bVal = sortMode === "chronological" ? (b.chronological ?? b.order ?? 0) : (b.order ?? 0);
+    return aVal - bVal;
+  });
+
+  const nextUnwatched = viewingCandidates.find(item => !safeStorage.isWatched(item.id));
 
   // Dynamic floating Next Up pill updates
   if (floatingPill) {
@@ -2360,13 +2654,31 @@ function updateNextUpBanner(data) {
       const nextContent = document.getElementById("floating-next-content");
       if (nextContent) {
         nextContent.onclick = () => {
-          const card = document.querySelector(`.mcu-card[data-id="${nextUnwatched.id}"]`);
+          let card = document.querySelector(`.mcu-card[data-id="${nextUnwatched.id}"]`);
+          if (!card) {
+            const epRow = document.querySelector(`.episode-row[data-id="${nextUnwatched.id}"]`);
+            if (epRow) {
+              const parentGroup = epRow.closest(".mcu-group-card");
+              if (parentGroup) {
+                const body = parentGroup.querySelector(".group-card-body");
+                const toggleBtn = parentGroup.querySelector(".group-toggle-btn");
+                if (body && body.classList.contains("collapsed")) {
+                  body.classList.remove("collapsed");
+                  toggleBtn?.classList.add("expanded");
+                }
+              }
+              card = epRow;
+            }
+          }
           if (card) {
             card.scrollIntoView({ behavior: "smooth", block: "center" });
-            card.style.transform = "scale(1.04)";
+            card.style.transition = "transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease";
+            card.style.boxShadow = "0 0 25px var(--accent)";
             card.style.borderColor = "var(--accent)";
+            card.style.transform = "scale(1.03)";
             setTimeout(() => {
               card.style.transform = "";
+              card.style.boxShadow = "";
               card.style.borderColor = "";
             }, 1200);
           }
@@ -2377,7 +2689,7 @@ function updateNextUpBanner(data) {
       if (nextCheck) {
         nextCheck.onclick = (e) => {
           e.stopPropagation();
-          localStorage.setItem(`watched_${nextUnwatched.id}`, "true");
+          safeStorage.setWatched(nextUnwatched.id, true);
           nextCheck.style.transform = "scale(0.8)";
           setTimeout(() => {
             nextCheck.style.transform = "";
@@ -2473,7 +2785,7 @@ function updateNextUpBanner(data) {
   const watchedBtn = banner.querySelector("#nextUpWatchedBtn");
 
   watchedBtn.addEventListener("click", () => {
-    localStorage.setItem(`watched_${nextUnwatched.id}`, "true");
+    safeStorage.setWatched(nextUnwatched.id, true);
     watchedBtn.style.transform = "scale(0.9)";
     setTimeout(() => {
       renderList(filteredData());
@@ -2532,8 +2844,26 @@ function initTimelineCanvas() {
     });
   }
 
+  let isCanvasActive = !document.hidden;
+  let rafId = null;
+
+  document.addEventListener("visibilitychange", () => {
+    isCanvasActive = !document.hidden;
+    if (isCanvasActive && !rafId) {
+      rafId = requestAnimationFrame(animate);
+    } else if (!isCanvasActive && rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  });
+
   let lastTime = 0;
   function animate(timestamp) {
+    if (!isCanvasActive) {
+      rafId = null;
+      return;
+    }
+
     if (!lastTime) lastTime = timestamp;
     lastTime = timestamp;
 
@@ -2611,10 +2941,10 @@ function initTimelineCanvas() {
 
     ctx.globalAlpha = 1.0;
     ctx.shadowBlur = 0;
-    requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(animate);
   }
 
-  requestAnimationFrame(animate);
+  rafId = requestAnimationFrame(animate);
 }
 
 function initNebulaParticles() {
@@ -2654,18 +2984,30 @@ function initNebulaParticles() {
   }
   
   let colors = getThemeColors();
-  setInterval(() => {
-    colors = getThemeColors();
-  }, 1000);
   
-  let isTabActive = true;
+  // Hook to theme changes cleanly without interval polling
+  const prevThemeHandler = window.onMoodThemeChange;
+  window.onMoodThemeChange = () => {
+    if (prevThemeHandler) prevThemeHandler();
+    colors = getThemeColors();
+  };
+  
+  let isTabActive = !document.hidden;
+  let nebulaRafId = null;
+
   document.addEventListener("visibilitychange", () => {
     isTabActive = !document.hidden;
+    if (isTabActive && !nebulaRafId) {
+      nebulaRafId = requestAnimationFrame(animate);
+    } else if (!isTabActive && nebulaRafId) {
+      cancelAnimationFrame(nebulaRafId);
+      nebulaRafId = null;
+    }
   });
   
   function animate() {
     if (!isTabActive) {
-      requestAnimationFrame(animate);
+      nebulaRafId = null;
       return;
     }
     
@@ -2697,10 +3039,10 @@ function initNebulaParticles() {
     
     ctx.shadowBlur = 0;
     ctx.globalAlpha = 1.0;
-    requestAnimationFrame(animate);
+    nebulaRafId = requestAnimationFrame(animate);
   }
   
-  animate();
+  nebulaRafId = requestAnimationFrame(animate);
 }
 
 function initFloatingThemePill() {
@@ -2743,6 +3085,29 @@ window.addEventListener("afterprint", () => {
 function initKeyboardShortcuts() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      // 1. Close Badge Detail Modal if open
+      const badgeModal = document.getElementById("badgeDetailModal");
+      if (badgeModal) {
+        badgeModal.querySelector(".badge-detail-close")?.click();
+        return;
+      }
+
+      // 2. Close Progress Modal if open
+      const progressModal = document.getElementById("progressModal");
+      if (progressModal && !progressModal.classList.contains("hidden")) {
+        closeProgressModal();
+        return;
+      }
+
+      // 3. Close floating theme dropdown
+      const themeDropdown = document.getElementById("floatingThemeDropdown");
+      if (themeDropdown && !themeDropdown.classList.contains("hidden")) {
+        themeDropdown.classList.add("hidden");
+        document.getElementById("floating-theme-content")?.setAttribute("aria-expanded", "false");
+        return;
+      }
+
+      // 4. Close search if focused
       const searchInput = document.getElementById("search");
       if (searchInput && document.activeElement === searchInput) {
         searchInput.value = "";
@@ -2750,15 +3115,17 @@ function initKeyboardShortcuts() {
         searchInput.blur();
         return;
       }
+
+      // 5. Close mobile navigation menu
       const dropdown = document.getElementById("dropdown");
       if (dropdown && !dropdown.classList.contains("hidden")) {
         dropdown.classList.add("hidden");
         document.getElementById("hamburger")?.setAttribute("aria-expanded", "false");
+        return;
       }
-      const filtersPanel = document.getElementById("filtersPanel");
-      if (filtersPanel && !filtersPanel.classList.contains("hidden")) {
-        filtersPanel.classList.add("hidden");
-      }
+
+      // 6. Close filter panels & sort dropdowns
+      closeAllDropdowns();
       return;
     }
 
