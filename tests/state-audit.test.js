@@ -214,4 +214,89 @@ assert.strictEqual(!isNaN(totalRuntime), true, "Runtime produced NaN");
 
 console.log("✅ 4. Dynamic Stats & NaN Protection Tests Passed");
 
-console.log("\n🎉 ALL TESTS PASSED SUCCESSFULLY (4/4 test groups).");
+// ─── 5. PWA Manifest, Service Worker & DOM Performance Tests ───
+const fs = require("fs");
+const path = require("path");
+
+const rootDir = path.resolve(__dirname, "..");
+
+// 5.1 Validate manifest.json
+const manifestPath = path.join(rootDir, "manifest.json");
+assert.strictEqual(fs.existsSync(manifestPath), true, "manifest.json is missing");
+const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+assert.strictEqual(typeof manifest.name === "string" && manifest.name.length > 0, true, "manifest.json name missing");
+assert.strictEqual(typeof manifest.short_name === "string" && manifest.short_name.length > 0, true, "manifest.json short_name missing");
+assert.strictEqual(manifest.display, "standalone", "manifest.json display must be standalone");
+assert.strictEqual(Array.isArray(manifest.icons) && manifest.icons.length >= 3, true, "manifest.json icons insufficient");
+
+// Verify all icon paths declared in manifest actually exist on disk
+manifest.icons.forEach(icon => {
+  const iconOnDisk = path.join(rootDir, icon.src);
+  assert.strictEqual(fs.existsSync(iconOnDisk), true, `Declared icon does not exist: ${icon.src}`);
+});
+
+// 5.2 Validate sw.js
+const swPath = path.join(rootDir, "sw.js");
+assert.strictEqual(fs.existsSync(swPath), true, "sw.js is missing");
+const swContent = fs.readFileSync(swPath, "utf8");
+assert.strictEqual(swContent.includes("CACHE_NAME"), true, "sw.js missing CACHE_NAME");
+assert.strictEqual(swContent.includes("CORE_ASSETS"), true, "sw.js missing CORE_ASSETS");
+assert.strictEqual(swContent.includes("self.addEventListener(\"install\""), true, "sw.js missing install listener");
+assert.strictEqual(swContent.includes("self.addEventListener(\"fetch\""), true, "sw.js missing fetch listener");
+
+// 5.3 Validate DOM Performance in style.css
+const stylePath = path.join(rootDir, "style.css");
+const styleContent = fs.readFileSync(stylePath, "utf8");
+assert.strictEqual(styleContent.includes("content-visibility: auto;"), true, "style.css missing content-visibility: auto");
+assert.strictEqual(styleContent.includes("contain-intrinsic-size: auto 450px;"), true, "style.css missing contain-intrinsic-size for .mcu-card");
+
+// 5.4 Validate HTML PWA Manifest Links
+const htmlFiles = ["index.html", "shows.html", "upcoming.html", "faq.html", "changelog.html", "mcu-viewing-order.html"];
+htmlFiles.forEach(file => {
+  const htmlContent = fs.readFileSync(path.join(rootDir, file), "utf8");
+  assert.strictEqual(htmlContent.includes('<link rel="manifest" href="manifest.json">'), true, `${file} missing manifest link`);
+  assert.strictEqual(htmlContent.includes("favicon/icon.svg"), true, `${file} missing svg favicon`);
+});
+
+console.log("✅ 5. PWA Manifest, Service Worker & DOM Performance Tests Passed");
+
+// ─── 6. Phase 6 Timeline Alignment, Subpage Storage & A11y Tests ───
+// 6.1 Validate getItemPhase logic (Phase 1 through Phase 6)
+function testGetItemPhase(item) {
+  if (item.multiverse !== 0) return "Multiverse & Others";
+  if (item.type !== "Marvel Studios" && item.type !== "Disney+" && item.type !== "One Shot") return "Multiverse & Others";
+  const d = item.release_date || "";
+  if (!d) return "Multiverse & Others";
+  if (d <= "2012-12-31") return "Phase 1";
+  if (d <= "2015-12-31") return "Phase 2";
+  if (d <= "2019-12-31") return "Phase 3";
+  if (d <= "2022-12-31") return "Phase 4";
+  if (d <= "2025-06-30") return "Phase 5";
+  return "Phase 6";
+}
+
+assert.strictEqual(testGetItemPhase({ type: "Marvel Studios", multiverse: 0, release_date: "2008-05-02" }), "Phase 1");
+assert.strictEqual(testGetItemPhase({ type: "Marvel Studios", multiverse: 0, release_date: "2014-08-01" }), "Phase 2");
+assert.strictEqual(testGetItemPhase({ type: "Marvel Studios", multiverse: 0, release_date: "2018-04-27" }), "Phase 3");
+assert.strictEqual(testGetItemPhase({ type: "Marvel Studios", multiverse: 0, release_date: "2021-12-17" }), "Phase 4");
+assert.strictEqual(testGetItemPhase({ type: "Marvel Studios", multiverse: 0, release_date: "2023-05-05" }), "Phase 5");
+assert.strictEqual(testGetItemPhase({ type: "Marvel Studios", multiverse: 0, release_date: "2025-07-25" }), "Phase 6"); // Fantastic Four
+assert.strictEqual(testGetItemPhase({ type: "Marvel Studios", multiverse: 0, release_date: "2026-12-18" }), "Phase 6"); // Avengers: Doomsday
+
+// 6.2 Validate Scroll Map Phase 6 Node in index.html
+const indexHtmlContent = fs.readFileSync(path.join(rootDir, "index.html"), "utf8");
+assert.strictEqual(indexHtmlContent.includes('data-phase-label="Phase 6"'), true, "index.html missing Phase 6 scroll node");
+
+// 6.3 Validate safeStorage and Escape handling across subpages
+const subpages = ["shows.html", "upcoming.html", "faq.html", "changelog.html"];
+subpages.forEach(sub => {
+  const content = fs.readFileSync(path.join(rootDir, sub), "utf8");
+  assert.strictEqual(content.includes("const safeStorage ="), true, `${sub} missing safeStorage definition`);
+  assert.strictEqual(content.includes('e.key === "Escape"'), true, `${sub} missing Escape key handler`);
+});
+
+console.log("✅ 6. Phase 6 Timeline Alignment, Subpage Storage & A11y Tests Passed");
+
+console.log("\n🎉 ALL TESTS PASSED SUCCESSFULLY (6/6 test groups).");
+
+

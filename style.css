@@ -2193,6 +2193,12 @@ body.view-compact .card-grid {
   cursor: pointer;
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 450px;
+}
+
+body.view-compact .mcu-card {
+  contain-intrinsic-size: auto 380px;
 }
 
 body.light .mcu-card {
@@ -2846,6 +2852,7 @@ body.view-list .mcu-card {
   border-radius: 14px;
   gap: 6px;
   min-height: 0;
+  contain-intrinsic-size: auto 50px;
 }
 
 body.view-list .mcu-card:hover {
@@ -3458,6 +3465,12 @@ body.dark .group-watched-badge.is-complete { color: #4ade80; }
     margin: 16px 0 0;
     color: #4b5563;
     font-size: 11px;
+  }
+
+  .mcu-card,
+  .group-card,
+  .print-row {
+    content-visibility: visible !important;
   }
 }
 

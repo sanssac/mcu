@@ -2,6 +2,26 @@
 
 All notable changes, additions, removals, and repository patches for **MCU Nexus** will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.2] — 2026-10-19
+### ✨ PWA & Offline
+- **Progressive Web App Manifest (`manifest.json`)**: Added a full Web App Manifest with Arc Reactor SVG and PNG icons, maskable icon definitions, and application shortcuts for installation on mobile and desktop.
+- **Offline Caching Service Worker (`sw.js`)**: Implemented a multi-tiered Service Worker with network-first navigation fallback, stale-while-revalidate for local core assets, and offline font/image caching.
+- **Favicon & OpenGraph Assets**: Provided vector `favicon/icon.svg`, high-resolution apple touch icons, and `mcu-embed.png` banner asset.
+
+### ⚡ Performance
+- **DOM Render Optimization**: Implemented `content-visibility: auto` with responsive `contain-intrinsic-size` across `.mcu-card` (450px grid / 380px compact / 50px list) and subpage grids, skipping layout and paint cycles for offscreen cards and eliminating stutter across 740+ titles.
+- **Canvas Lifecycle Management**: Added `visibilitychange` listeners to pause background particle and nebula canvas animations when tabs are in the background.
+
+### 🛠️ Fixed
+- **Badge Modal Focus Trap Escape Key**: Resolved focus trap parameter mismatch ensuring `Escape` cleanly closes the achievement trophy modal.
+- **TV Show Episode Watch Crash**: Fixed `renderBadge is not defined` crash when toggling episode watch state inside TV show group cards.
+- **State Persistence Resilience**: Introduced `safeStorage` wrapper preventing storage crashes in privacy-restricted browser modes and hardened V2 backup codecs.
+- **Phase 6 Classification & Scroll Map**: Updated `getItemPhase()` to assign releases starting July 2025 (*The Fantastic Four: First Steps*, *Avengers: Doomsday*) to Phase 6, added Phase 6 node to the Scroll Map, and tracked Phase 6 completion in the dashboard.
+- **Subpage Theme & Menu Accessibility**: Synchronized `theme-*` classes to `document.documentElement` across `shows.html`, `upcoming.html`, `faq.html`, and `changelog.html`, unified `safeStorage` to eliminate unhandled `SecurityError` crashes, and added `Escape` key handling to close mobile menus.
+- **Show Name Tooltips**: Added title attributes on show names in `shows.html` so truncated titles can be viewed on hover/tap.
+
+---
+
 ## [1.5.1] — 2026-08-10
 ### 🛠️ Fixed
 - **Search Initialization & Debounce Patch**: Implemented missing `debounce()` utility function in `script.js` to fix `Uncaught ReferenceError` when binding search input event listeners in Release and Chronological views.

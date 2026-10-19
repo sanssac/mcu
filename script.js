@@ -239,7 +239,8 @@ function getItemPhase(item) {
   if (d <= "2015-12-31") return "Phase 2";
   if (d <= "2019-12-31") return "Phase 3";
   if (d <= "2022-12-31") return "Phase 4";
-  return "Phase 5";
+  if (d <= "2025-06-30") return "Phase 5";
+  return "Phase 6";
 }
 
 function createMultiverseChip(mv) {
@@ -1351,7 +1352,7 @@ function getDisplayTitle(item) {
 }
 
 function renderPhaseProgress() {
-  const phases = ["Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Multiverse & Others"];
+  const phases = ["Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Phase 6", "Multiverse & Others"];
   const counts = {};
   phases.forEach(p => {
     counts[p] = { total: 0, watched: 0 };
@@ -2332,12 +2333,6 @@ function showBadgeDetails(badgeId) {
   document.body.appendChild(modal);
   document.body.style.overflow = "hidden";
 
-  // Trigger browser paint to transition in
-  requestAnimationFrame(() => {
-    modal.classList.add("active");
-    trapModalFocus(modal, previousActiveElement);
-  });
-
   // Closing animation and removal
   const closeModal = () => {
     document.body.style.overflow = "";
@@ -2359,6 +2354,12 @@ function showBadgeDetails(badgeId) {
       }
     }, 400);
   };
+
+  // Trigger browser paint to transition in
+  requestAnimationFrame(() => {
+    modal.classList.add("active");
+    trapModalFocus(modal, closeModal);
+  });
 
   // Bind close triggers
   modal.querySelector(".badge-detail-close").addEventListener("click", closeModal);
@@ -3144,3 +3145,28 @@ function initKeyboardShortcuts() {
 
 initKeyboardShortcuts();
 loadData();
+
+function initServiceWorker() {
+  if ("serviceWorker" in navigator && (window.location.protocol === "http:" || window.location.protocol === "https:")) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js", { scope: "./" })
+        .then((reg) => {
+          reg.addEventListener("updatefound", () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener("statechange", () => {
+                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                  console.log("[MCU Nexus] New version cached and ready for offline use.");
+                }
+              });
+            }
+          });
+        })
+        .catch((err) => {
+          console.warn("[MCU Nexus] ServiceWorker registration failed:", err);
+        });
+    });
+  }
+}
+
+initServiceWorker();

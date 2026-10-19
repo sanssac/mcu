@@ -33,9 +33,11 @@
     content="Master the Marvel Cinematic Universe timeline. Complete chronological watch order, phase breakdowns, and Disney+ series placements updated for 2026.">
   <meta name="twitter:image" content="mcu-embed.png">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
-  <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png">
+  <!-- Favicon & PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="favicon/icon.svg">
+  <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96">
+  <link rel="apple-touch-icon" href="favicon/apple-touch-icon.png">
 
   <!-- Dark Mode Inline Flash Prevention Script -->
   <script>(function () { try { var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'); if (t === 'dark') { document.documentElement.classList.add('dark'); var m = document.getElementById('theme-color-meta'); if (m) m.content = '#08090e'; } var mood = localStorage.getItem('mcu_mood_theme'); if (mood && mood !== 'classic') { document.documentElement.classList.add('theme-' + mood); } } catch(e) {} })()</script>
@@ -472,9 +474,48 @@
   <!-- Main Theme Logic Script -->
   <script>
       (function () {
-        var theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+        var safeStorage = {
+          get: function (k, fb) { try { var v = localStorage.getItem(k); return v !== null ? v : fb; } catch (e) { return fb; } }
+        };
+
+        var theme = safeStorage.get('theme', matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
         document.documentElement.classList.toggle('dark', theme === 'dark');
         document.body.classList.toggle('dark', theme === 'dark');
+
+        var mood = safeStorage.get('mcu_mood_theme');
+        if (mood && mood !== 'classic') {
+          document.documentElement.classList.add('theme-' + mood);
+          document.body.classList.add('theme-' + mood);
+        }
+
+        var hamburger = document.getElementById("hamburger");
+        var hamburgerIcon = document.getElementById("hamburger-icon");
+        var dropdown = document.getElementById("dropdown");
+
+        function closeMenu() {
+          if (dropdown) dropdown.classList.add("hidden");
+          if (hamburger) hamburger.setAttribute("aria-expanded", "false");
+          if (hamburgerIcon) hamburgerIcon.classList.remove("open");
+        }
+
+        hamburger?.addEventListener("click", function (e) {
+          e.stopPropagation();
+          var isOpen = !dropdown.classList.toggle("hidden");
+          hamburger.setAttribute("aria-expanded", String(isOpen));
+          hamburgerIcon.classList.toggle("open", isOpen);
+        });
+
+        dropdown?.addEventListener("click", function (e) { e.stopPropagation(); });
+        document.addEventListener("click", closeMenu);
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closeMenu();
+        });
+
+        if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+          window.addEventListener('load', function () {
+            navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () {});
+          });
+        }
       })();
   </script>
 </body>

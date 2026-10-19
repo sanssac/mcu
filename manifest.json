@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "id": "/mcu-nexus",
+  "name": "MCU Nexus — Marvel Cinematic Universe Tracker",
+  "short_name": "MCU Nexus",
+  "description": "Interactive Marvel Cinematic Universe timeline watch tracker with real-time statistics, character journeys, and offline watch progress.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#08090e",
+  "theme_color": "#090b10",
+  "categories": [
+    "entertainment",
+    "utilities",
+    "movies"
+  ],
+  "icons": [
+    {
+      "src": "favicon/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Viewing Order Tracker",
+      "short_name": "Tracker",
+      "description": "Interactive MCU Timeline and Checklist",
+      "url": "index.html",
+      "icons": [
+        {
+          "src": "favicon/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Upcoming Releases",
+      "short_name": "Upcoming",
+      "description": "MCU Movie & Disney+ Release Countdowns",
+      "url": "upcoming.html",
+      "icons": [
+        {
+          "src": "favicon/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Show Status Tracker",
+      "short_name": "Shows",
+      "description": "Disney+ and Television Show Renewals & Status",
+      "url": "shows.html",
+      "icons": [
+        {
+          "src": "favicon/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Frequently Asked Questions",
+      "short_name": "FAQ",
+      "description": "Timeline, Canon & Viewing Order FAQ",
+      "url": "faq.html",
+      "icons": [
+        {
+          "src": "favicon/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

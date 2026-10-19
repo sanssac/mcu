@@ -15,7 +15,10 @@
   <meta property="og:url" content="./upcoming.html">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="favicon/icon.svg">
+  <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96">
+  <link rel="apple-touch-icon" href="favicon/apple-touch-icon.png">
   <script>(function () { try { var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'); if (t === 'dark') { document.documentElement.classList.add('dark'); var m = document.getElementById('theme-color-meta'); if (m) m.content = '#08090e'; } var mood = localStorage.getItem('mcu_mood_theme'); if (mood && mood !== 'classic') { document.documentElement.classList.add('theme-' + mood); } } catch(e) {} })()</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,6 +64,8 @@
       border-radius: var(--radius-lg);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      content-visibility: auto;
+      contain-intrinsic-size: auto 198px;
     }
 
     body.dark .upcoming-card {
@@ -338,18 +343,37 @@
       document.getElementById("upcoming-grid").innerHTML = data.map(renderCard).join("");
     }
 
-    // ─── Theme ───
+    // ─── Safe Storage & Theme Synchronization ───
+    const safeStorage = {
+      get(k, fallback = null) {
+        try {
+          const v = localStorage.getItem(k);
+          return v !== null ? v : fallback;
+        } catch {
+          return fallback;
+        }
+      },
+      set(k, v) {
+        try {
+          localStorage.setItem(k, String(v));
+          return true;
+        } catch {
+          return false;
+        }
+      }
+    };
+
     const applyTheme = (theme) => {
       document.documentElement.classList.toggle("dark", theme === "dark");
       document.body.classList.toggle("dark", theme === "dark");
       const meta = document.getElementById("theme-color-meta");
       if (meta) meta.setAttribute("content", theme === "dark" ? "#0d1016" : "#eef1f6");
-      localStorage.setItem("theme", theme);
+      safeStorage.set("theme", theme);
       if (theme === "light") {
         applyMoodTheme("classic");
       }
     };
-    applyTheme(localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+    applyTheme(safeStorage.get("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
 
     document.getElementById("floating-theme-toggle")?.addEventListener("click", e => {
       e.preventDefault();
@@ -357,32 +381,41 @@
     });
 
     function applyMoodTheme(mood) {
-      document.body.classList.remove("theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer", "theme-captain", "theme-spiderman");
+      const allMoods = ["theme-stark", "theme-tva", "theme-wakanda", "theme-sorcerer", "theme-captain", "theme-spiderman"];
+      document.body.classList.remove(...allMoods);
+      document.documentElement.classList.remove(...allMoods);
       if (mood && mood !== "classic") {
         document.body.classList.add(`theme-${mood}`);
+        document.documentElement.classList.add(`theme-${mood}`);
         if (!document.body.classList.contains("dark")) {
           applyTheme("dark");
         }
       }
-      localStorage.setItem("mcu_mood_theme", mood);
+      safeStorage.set("mcu_mood_theme", mood);
       document.querySelectorAll(".theme-dot").forEach(dot => {
         dot.classList.toggle("active", dot.getAttribute("data-theme") === mood);
       });
     }
 
-    const savedMood = localStorage.getItem("mcu_mood_theme") || "classic";
+    const savedMood = safeStorage.get("mcu_mood_theme", "classic");
     applyMoodTheme(savedMood);
 
     document.querySelectorAll(".theme-dot").forEach(dot => {
-      dot.addEventListener("click", event => {
+      dot.addEventListener("click", () => {
         applyMoodTheme(dot.getAttribute("data-theme"));
       });
     });
 
-    // ─── Hamburger ───
+    // ─── Hamburger Mobile Toggle & Escape Handling ───
     const hamburger = document.getElementById("hamburger");
     const hamburgerIcon = document.getElementById("hamburger-icon");
     const dropdown = document.getElementById("dropdown");
+
+    function closeMenu() {
+      dropdown?.classList.add("hidden");
+      hamburger?.setAttribute("aria-expanded", "false");
+      hamburgerIcon?.classList.remove("open");
+    }
 
     hamburger?.addEventListener("click", e => {
       e.stopPropagation();
@@ -392,11 +425,9 @@
     });
 
     dropdown?.addEventListener("click", e => e.stopPropagation());
-
-    document.addEventListener("click", () => {
-      dropdown?.classList.add("hidden");
-      hamburger?.setAttribute("aria-expanded", "false");
-      hamburgerIcon?.classList.remove("open");
+    document.addEventListener("click", closeMenu);
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeMenu();
     });
 
     document.querySelectorAll("[data-coming-soon]").forEach(link => {
@@ -417,6 +448,12 @@
     });
 
     load();
+
+    if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js', { scope: './' }).catch(() => {});
+      });
+    }
   </script>
 </body>
 
