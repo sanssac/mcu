@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1.5.1">
+  <link rel="stylesheet" href="style.css?v=1.5.2">
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
@@ -180,6 +180,41 @@
 
     <!-- Timeline Container -->
     <div id="changelogTimeline" class="changelog-timeline">
+
+      <!-- v1.5.2 Entry -->
+      <div class="timeline-card" data-version="1.5.2">
+        <div class="timeline-node" aria-hidden="true"></div>
+        <div class="timeline-item-card">
+          <div class="timeline-meta">
+            <span class="timeline-date">October 19, 2026</span>
+            <span class="timeline-version">v1.5.2</span>
+          </div>
+          <h2 class="timeline-title">Comprehensive State Persistence, Filter Resiliency, Modal Accessibility & Performance Overhaul</h2>
+          <p class="timeline-desc">Hardened watch progress persistence with safeStorage fallbacks and corrupted code protection, patched TV group card watch execution, aligned Next-Up queue ordering, eliminated theme flash across all subpages, and paused background canvas animations to eliminate CPU drain.</p>
+          <div class="timeline-change-list">
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Resolved <code>ReferenceError: renderBadge is not defined</code> crash when toggling episode watch state inside TV show group cards, ensuring watch statistics, group badge counts, and milestone triggers recalculate in real-time.</div>
+            </div>
+            <div class="change-item" data-type="improved">
+              <span class="change-tag change-tag-improved">Security</span>
+              <div class="change-details">Engineered <code>safeStorage</code> abstraction preventing storage crashes under strict privacy modes, and created V2 structured backup strings (<code>MCUNEXUS:v2:...</code>) with strict legacy bitmask validation to prevent silent data wipes on empty or corrupted restore codes.</div>
+            </div>
+            <div class="change-item" data-type="fixed">
+              <span class="change-tag change-tag-fixed">Fixed</span>
+              <div class="change-details">Resolved Next-Up recommendation card inversion when sorting descending, and engineered auto-expansion and smooth scroll centering for unwatched TV episodes inside collapsed series cards.</div>
+            </div>
+            <div class="change-item" data-type="improved">
+              <span class="change-tag change-tag-improved">UI/UX</span>
+              <div class="change-details">Scoped all 6 custom MCU mood themes to <code>:is(html, body).theme-*</code> with inline <code>&lt;head&gt;</code> pre-hydration across all site pages to eliminate theme flash, and implemented focus trapping, scroll locking, and <code>Escape</code> key handling on modals and menus.</div>
+            </div>
+            <div class="change-item" data-type="improved">
+              <span class="change-tag change-tag-improved">Performance</span>
+              <div class="change-details">Added <code>visibilitychange</code> lifecycle handlers to <code>timelineCanvas</code> and <code>nebulaParticles</code> to halt rendering loops in background tabs, and optimized scroll map phase detection to an O(1) viewport point hit-test, eliminating 700+ synchronous layout reflows per scroll tick.</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- v1.5.1 Entry -->
       <div class="timeline-card" data-version="1.5.1">

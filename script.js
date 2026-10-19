@@ -56,16 +56,16 @@ const VIEW_MODES = new Set(["comfortable", "compact", "list"]);
 const FILTER_URL_KEYS = ["q", "sort", "direction", "type", "canon", "universe", "hide", "view"];
 
 const MULTIVERSE_LABELS = {
-  "0":  "Earth-616 (MCU)",
-  "1":  "Earth-688 (SSU)",
-  "2":  "Earth-26320 (Blade)",
-  "3":  "Earth-10005 (X-Men)",
-  "4":  "Earth-96283 (Spider-Man)",
-  "5":  "Earth-120703 (The Amazing Spider-Man)",
-  "6":  "Earth-701306 (Daredevil - Fox)",
-  "7":  "Earth-121698 (Fantastic Four 2005)",
-  "8":  "Earth-TRN554 (Fantastic Four 2015)",
-  "9":  "What If...? - An Immersive Story",
+  "0": "Earth-616 (MCU)",
+  "1": "Earth-688 (SSU)",
+  "2": "Earth-26320 (Blade)",
+  "3": "Earth-10005 (X-Men)",
+  "4": "Earth-96283 (Spider-Man)",
+  "5": "Earth-120703 (The Amazing Spider-Man)",
+  "6": "Earth-701306 (Daredevil - Fox)",
+  "7": "Earth-121698 (Fantastic Four 2005)",
+  "8": "Earth-TRN554 (Fantastic Four 2015)",
+  "9": "What If...? - An Immersive Story",
   "10": "Earth-1610 (Spiderverse)",
   "11": "Loki",
   "12": "Earth-828 (Fantastic Four: First Steps)",
@@ -106,7 +106,7 @@ function matchesJourney(item, journey) {
   const title = (item.title || "").toLowerCase();
   const show = (item.show || "").toLowerCase();
   const id = (item.id || "").toLowerCase();
-  
+
   if (journey === "stark") {
     return (
       title.includes("iron man") || title.includes("stark") || title.includes("haztech") || title.includes("iron patriot") ||
@@ -118,11 +118,11 @@ function matchesJourney(item, journey) {
       id.includes("ironheart") || show.includes("ironheart") || title.includes("ironheart") ||
       id.includes("armor_wars") || title.includes("armor wars") ||
       id.includes("the_consultant") || id.includes("the_incredible_hulk") ||
-      id.includes("avengers") || id.includes("avengers_age_of_ultron") || 
+      id.includes("avengers") || id.includes("avengers_age_of_ultron") ||
       id.includes("avengers_infinity_war") || id.includes("avengers_endgame")
     );
   }
-  
+
   if (journey === "cap") {
     return (
       title.includes("captain america") || title.includes("first avenger") || title.includes("falcon") ||
@@ -132,12 +132,12 @@ function matchesJourney(item, journey) {
       title.includes("bucky") || id.includes("bucky") ||
       title.includes("captain carter") || id.includes("captain_carter") ||
       id.includes("agent_carter") || title.includes("agent carter") || show.includes("agent carter") ||
-      id.includes("avengers") || id.includes("avengers_age_of_ultron") || 
+      id.includes("avengers") || id.includes("avengers_age_of_ultron") ||
       id.includes("avengers_infinity_war") || id.includes("avengers_endgame") ||
       id.includes("captain_america_civil_war") || id.includes("rappin_with_captain_america")
     );
   }
-  
+
   if (journey === "thor") {
     return (
       title.includes("thor") || title.includes("loki") || title.includes("ragnarok") || title.includes("lightning") ||
@@ -146,11 +146,11 @@ function matchesJourney(item, journey) {
       title.includes("hela") || id.includes("hela") ||
       title.includes("asgard") || id.includes("asgard") ||
       id.includes("team_darryl") || id.includes("thor_is_fine_guys") ||
-      id.includes("avengers") || id.includes("avengers_age_of_ultron") || 
+      id.includes("avengers") || id.includes("avengers_age_of_ultron") ||
       id.includes("avengers_infinity_war") || id.includes("avengers_endgame")
     );
   }
-  
+
   if (journey === "wanda") {
     return (
       title.includes("wandavision") || title.includes("agatha") || title.includes("multiverse of madness") ||
@@ -160,13 +160,13 @@ function matchesJourney(item, journey) {
       (/\bvision\b/.test(title) && !id.includes("television") && !id.includes("division")) ||
       (/\bvision\b/.test(show) && !id.includes("television") && !id.includes("division")) ||
       (/\bvision\b/.test(id.replace(/_/g, " ")) && !id.includes("television") && !id.includes("division")) ||
-      id.includes("avengers_age_of_ultron") || id.includes("avengers_infinity_war") || 
+      id.includes("avengers_age_of_ultron") || id.includes("avengers_infinity_war") ||
       id.includes("avengers_endgame") || id.includes("captain_america_civil_war") ||
-      id.includes("what_if_s1_e5") || id.includes("what_if_s1_e8") || id.includes("what_if_s1_e9") || 
+      id.includes("what_if_s1_e5") || id.includes("what_if_s1_e8") || id.includes("what_if_s1_e9") ||
       id.includes("what_if_s2_e8") || id.includes("what_if_s3_e1") || id.includes("what_if_s3_e2")
     );
   }
-  
+
   if (journey === "tesseract") {
     return (
       id.includes("captain_america_the_first_avenger") ||
@@ -175,8 +175,8 @@ function matchesJourney(item, journey) {
       id.includes("thor_the_dark_world") ||
       id.includes("thor_ragnarok") ||
       id.includes("avengers_infinity_war") ||
-      id.includes("avengers_endgame") || 
-      id.includes("what_if_s1_e1") || 
+      id.includes("avengers_endgame") ||
+      id.includes("what_if_s1_e1") ||
       id.includes("what_if_s2_e6") ||
       id.includes("loki") || show.includes("loki") || title.includes("tesseract") || id.includes("tesseract")
     );
@@ -191,7 +191,7 @@ function matchesJourney(item, journey) {
       title.includes("homecoming") || id.includes("homecoming") ||
       title.includes("far from home") || id.includes("far_from_home") ||
       title.includes("no way home") || id.includes("no_way_home") ||
-      id.includes("captain_america_civil_war") || id.includes("avengers_infinity_war") || 
+      id.includes("captain_america_civil_war") || id.includes("avengers_infinity_war") ||
       id.includes("avengers_endgame") || id.includes("what_if_s1_e5") || id.includes("what_if_s1_e9")
     );
   }
@@ -205,7 +205,7 @@ function matchesJourney(item, journey) {
       title.includes("awesome mix") || title.includes("yondu") || id.includes("yondu") ||
       title.includes("cosmo") || id.includes("cosmo") ||
       id.includes("holiday_special") || title.includes("holiday special") ||
-      id.includes("avengers_infinity_war") || id.includes("avengers_endgame") || 
+      id.includes("avengers_infinity_war") || id.includes("avengers_endgame") ||
       id.includes("thor_love_and_thunder") ||
       id.includes("what_if_s1_e2") || id.includes("what_if_s2_e1") || id.includes("what_if_s2_e2")
     );
@@ -218,11 +218,11 @@ function matchesJourney(item, journey) {
       id.includes("doctor_strange") || id.includes("strange_supreme") || id.includes("eye_of_agamotto") || id.includes("kamara_taj") || id.includes("wong") || id.includes("ancient_one") || id.includes("clea") || id.includes("dormammu") ||
       title.includes("multiverse of madness") || id.includes("multiverse_of_madness") ||
       title.includes("no way home") || id.includes("no_way_home") ||
-      id.includes("avengers_infinity_war") || id.includes("avengers_endgame") || 
+      id.includes("avengers_infinity_war") || id.includes("avengers_endgame") ||
       id.includes("thor_ragnarok") || id.includes("what_if_s1_e4") || id.includes("what_if_s2_e9")
     );
   }
-  
+
   return false;
 }
 
@@ -277,33 +277,33 @@ function syncFilterSubmenus() {
 }
 
 const STUDIO_TINTS = {
-  "Marvel Studios":   "#e71912",
-  "Disney+":          "#7b7cf8",
-  "ABC":              "#0ea36a",
-  "Netflix":          "#e87722",
-  "Hulu":             "#1ce783",
-  "Freeform":         "#9b5de5",
-  "One Shot":         "#14b8a6",
-  "Sony":             "#5b9cf6",
-  "Fox":              "#f4a100",
-  "New Line Cinema":  "#00b4d8",
-  "YouTube":          "#ff2d7e",
-  "WHIH":             "#607d8b",
-  "Daily Bugle":      "#eab308",
-  "Other":            "#8d99ae"
+  "Marvel Studios": "#e71912",
+  "Disney+": "#7b7cf8",
+  "ABC": "#0ea36a",
+  "Netflix": "#e87722",
+  "Hulu": "#1ce783",
+  "Freeform": "#9b5de5",
+  "One Shot": "#14b8a6",
+  "Sony": "#5b9cf6",
+  "Fox": "#f4a100",
+  "New Line Cinema": "#00b4d8",
+  "YouTube": "#ff2d7e",
+  "WHIH": "#607d8b",
+  "Daily Bugle": "#eab308",
+  "Other": "#8d99ae"
 };
 
 const MV_TINTS = {
-  "0":  "#e71912",
-  "1":  "#ff9800",
-  "2":  "#a7b027",
-  "3":  "#0d8c12",
-  "4":  "#3643f4",
-  "5":  "#a33fb5",
-  "6":  "#cd795a",
-  "7":  "#673ab7",
-  "8":  "#607d8b",
-  "9":  "#009688",
+  "0": "#e71912",
+  "1": "#ff9800",
+  "2": "#a7b027",
+  "3": "#0d8c12",
+  "4": "#3643f4",
+  "5": "#a33fb5",
+  "6": "#cd795a",
+  "7": "#673ab7",
+  "8": "#607d8b",
+  "9": "#009688",
   "10": "#b8c22a",
   "11": "#ff5722",
   "12": "#e91e63",
@@ -410,7 +410,7 @@ function updateUrlFromState(state = getFilterState()) {
 
 function updateViewControls() {
   document.body.classList.toggle("view-compact", viewMode === "compact");
-  document.body.classList.toggle("view-list",    viewMode === "list");
+  document.body.classList.toggle("view-list", viewMode === "list");
   document.querySelectorAll("[data-view-mode]").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.viewMode === viewMode));
   });
@@ -428,14 +428,14 @@ function setViewMode(mode, { save = false } = {}) {
 
 function saveFilterState({ updateUrl = true } = {}) {
   const state = getFilterState();
-  safeStorage.set("filter_search",        state.search);
-  safeStorage.set("filter_type",          state.typeVals);
-  safeStorage.set("filter_canon",         state.canonVals);
-  safeStorage.set("filter_multiverse",    state.mvVals);
-  safeStorage.set("filter_sort",          state.sortMode);
+  safeStorage.set("filter_search", state.search);
+  safeStorage.set("filter_type", state.typeVals);
+  safeStorage.set("filter_canon", state.canonVals);
+  safeStorage.set("filter_multiverse", state.mvVals);
+  safeStorage.set("filter_sort", state.sortMode);
   safeStorage.set("filter_sortDirection", state.sortDirection);
-  safeStorage.set("filter_hideWatched",   String(state.hideWatched));
-  safeStorage.set("filter_viewMode",      state.viewMode);
+  safeStorage.set("filter_hideWatched", String(state.hideWatched));
+  safeStorage.set("filter_viewMode", state.viewMode);
   if (updateUrl) updateUrlFromState(state);
 }
 
@@ -467,8 +467,8 @@ function restoreFilterState() {
     const saved = safeStorage.getJSON(storageKey, []);
     setPanelValues(panelSelector, Array.isArray(saved) ? saved : []);
   };
-  restore("filter_type",       "#typeFilter");
-  restore("filter_canon",      "#canonFilter");
+  restore("filter_type", "#typeFilter");
+  restore("filter_canon", "#canonFilter");
   restore("filter_multiverse", "#multiverseFilter");
   setSearchValue(safeStorage.get("filter_search", ""));
 
@@ -627,7 +627,7 @@ async function loadData() {
 
   const searchInput = document.getElementById("search");
   const searchClear = document.getElementById("searchClear");
-  
+
   const debouncedSearch = debounce(() => {
     saveFilterState();
     renderList(filteredData());
@@ -699,7 +699,7 @@ async function loadData() {
       const cleanUrl = `${window.location.pathname}${cleanParams.toString() ? `?${cleanParams.toString()}` : ""}${window.location.hash}`;
       try {
         window.history.replaceState(null, "", cleanUrl);
-      } catch (e) {}
+      } catch (e) { }
     }, 400);
   }
 }
@@ -990,8 +990,8 @@ function createSingleCard(item) {
   const formattedRuntime = formatRuntimeLong(item.runtime);
 
   const mvLabelFull = multiverseName(item.multiverse);
-  const earthMatch  = mvLabelFull.match(/(Earth-[^\s(]+)/);
-  const mvLabel     = earthMatch ? earthMatch[1] : mvLabelFull;
+  const earthMatch = mvLabelFull.match(/(Earth-[^\s(]+)/);
+  const mvLabel = earthMatch ? earthMatch[1] : mvLabelFull;
 
   const nonCanonTag = item.canon === false
     ? `<span class="non-canon-tag">Non-Canon</span>`
@@ -1100,8 +1100,8 @@ function createGroupCard(group) {
   const dateRange = (startYear && endYear && startYear === endYear) ? startYear : (startYear && endYear ? `${startYear}–${endYear}` : (startYear || endYear || ""));
 
   const mvLabelFull = multiverseName(firstItem.multiverse);
-  const earthMatch  = mvLabelFull.match(/(Earth-[^\s(]+)/);
-  const mvLabel     = earthMatch ? earthMatch[1] : mvLabelFull;
+  const earthMatch = mvLabelFull.match(/(Earth-[^\s(]+)/);
+  const mvLabel = earthMatch ? earthMatch[1] : mvLabelFull;
 
   const card = document.createElement("div");
   card.className = `mcu-card group-card${expanded ? " is-expanded" : ""}`;
@@ -1169,7 +1169,7 @@ function createGroupCard(group) {
       row.classList.add("row-journey-match");
     }
 
-    const badge    = document.createElement("span");
+    const badge = document.createElement("span");
     badge.className = "ep-badge";
     badge.textContent = `S${Math.trunc(Number(it.season))}E${Math.trunc(Number(it.episode))}`;
 
@@ -1235,6 +1235,7 @@ function createGroupCard(group) {
       const nextWatched = toggle.checked;
       safeStorage.setWatched(it.id, nextWatched);
       row.classList.toggle("is-watched", nextWatched);
+
       updateGroupBadge();
       updateStats();
       if (typeof window.updateJourneyUI === "function") {
@@ -1319,15 +1320,15 @@ function renderList(data) {
 function formatRuntime(minutes) {
   const safeMins = Math.max(0, Number(minutes) || 0);
   const totalSeconds = Math.round(safeMins * 60);
-  const days  = Math.floor(totalSeconds / 86400);
+  const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const mins  = Math.floor((totalSeconds % 3600) / 60);
-  const secs  = totalSeconds % 60;
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
   const parts = [];
-  if (days)  parts.push(`${days}d`);
+  if (days) parts.push(`${days}d`);
   if (hours) parts.push(`${hours}h`);
-  if (mins)  parts.push(`${mins}m`);
-  if (secs)  parts.push(`${secs}s`);
+  if (mins) parts.push(`${mins}m`);
+  if (secs) parts.push(`${secs}s`);
   return parts.join(" ");
 }
 
@@ -1340,8 +1341,8 @@ function formatRuntimeLong(minutes) {
 }
 
 function getDisplayTitle(item) {
-  const hasShow    = typeof item.show === "string" && item.show.trim() !== "";
-  const hasSeason  = item.season  != null && !Number.isNaN(Number(item.season));
+  const hasShow = typeof item.show === "string" && item.show.trim() !== "";
+  const hasSeason = item.season != null && !Number.isNaN(Number(item.season));
   const hasEpisode = item.episode != null && !Number.isNaN(Number(item.episode));
   if (hasShow && hasSeason && hasEpisode) {
     return `${item.show} S${Math.trunc(Number(item.season))}E${Math.trunc(Number(item.episode))}: ${item.title}`;
@@ -1422,11 +1423,11 @@ function renderPhaseProgress() {
 }
 
 function updateStats() {
-  const watchedItems    = fullData.filter(item => safeStorage.isWatched(item.id));
-  const totalRuntime    = fullData.reduce((s, item) => s + (Number(item.runtime) || 0), 0);
-  const watchedRuntime  = watchedItems.reduce((s, item) => s + (Number(item.runtime) || 0), 0);
+  const watchedItems = fullData.filter(item => safeStorage.isWatched(item.id));
+  const totalRuntime = fullData.reduce((s, item) => s + (Number(item.runtime) || 0), 0);
+  const watchedRuntime = watchedItems.reduce((s, item) => s + (Number(item.runtime) || 0), 0);
   const remainingRuntime = Math.max(0, totalRuntime - watchedRuntime);
-  const percent         = totalRuntime ? Math.min(100, Math.round((watchedRuntime / totalRuntime) * 100)) : 0;
+  const percent = totalRuntime ? Math.min(100, Math.round((watchedRuntime / totalRuntime) * 100)) : 0;
 
   const setEl = (id, text) => {
     const el = document.getElementById(id);
@@ -1450,13 +1451,13 @@ function updateStats() {
 function formatRuntimeShort(minutes) {
   const safeMins = Math.max(0, Number(minutes) || 0);
   const totalSeconds = Math.round(safeMins * 60);
-  const days  = Math.floor(totalSeconds / 86400);
+  const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const mins  = Math.floor((totalSeconds % 3600) / 60);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
   const parts = [];
-  if (days)  parts.push(`${days}d`);
+  if (days) parts.push(`${days}d`);
   if (hours) parts.push(`${hours}h`);
-  if (mins)  parts.push(`${mins}m`);
+  if (mins) parts.push(`${mins}m`);
   return parts.join(" ") || "0m";
 }
 
@@ -1510,9 +1511,9 @@ function matchesSearchQuery(item, query) {
 
   const displayTitle = getDisplayTitle(item);
   const displayTitleNorm = normalizeSearchText(displayTitle);
-  const rawTitleNorm     = normalizeSearchText(item.title || "");
-  const showNameNorm     = normalizeSearchText(item.show || "");
-  const year             = item.release_date ? String(item.release_date).substring(0, 4) : "";
+  const rawTitleNorm = normalizeSearchText(item.title || "");
+  const showNameNorm = normalizeSearchText(item.show || "");
+  const year = item.release_date ? String(item.release_date).substring(0, 4) : "";
 
   // 1. Direct normalized substring match or exact release year match
   if (
@@ -1559,20 +1560,20 @@ function matchesSearchQuery(item, query) {
 }
 
 function filteredData() {
-  const query       = (document.getElementById("search")?.value || "").toLowerCase().trim();
+  const query = (document.getElementById("search")?.value || "").toLowerCase().trim();
   const hideWatched = document.getElementById("hideWatched")?.checked === true;
-  const typeVals    = Array.from(document.querySelectorAll("#typeFilter input:checked")).map(c => c.value);
-  const canonVals   = Array.from(document.querySelectorAll("#canonFilter input:checked")).map(c => c.value);
-  const mvVals      = Array.from(multiverseFilterInputs(":checked")).map(c => c.value);
+  const typeVals = Array.from(document.querySelectorAll("#typeFilter input:checked")).map(c => c.value);
+  const canonVals = Array.from(document.querySelectorAll("#canonFilter input:checked")).map(c => c.value);
+  const mvVals = Array.from(multiverseFilterInputs(":checked")).map(c => c.value);
 
   return fullData.filter(item => {
-    const isWatched  = safeStorage.isWatched(item.id);
-    const typeMatch  = typeVals.length  === 0 || typeVals.includes(item.type);
+    const isWatched = safeStorage.isWatched(item.id);
+    const typeMatch = typeVals.length === 0 || typeVals.includes(item.type);
     const itemCanonStr = (item.canon === true || item.canon === "true") ? "true" : "false";
     const canonMatch = canonVals.length === 0 || canonVals.includes(itemCanonStr);
-    const mvMatch    = mvVals.length    === 0 || mvVals.includes(String(item.multiverse));
+    const mvMatch = mvVals.length === 0 || mvVals.includes(String(item.multiverse));
     const journeyMatch = !activeJourney || matchesJourney(item, activeJourney);
-    
+
     return matchesSearchQuery(item, query)
       && (!hideWatched || !isWatched)
       && typeMatch && canonMatch && mvMatch
@@ -1628,8 +1629,8 @@ function getPrintFilterSummary(dataCount) {
     .map(input => multiverseName(input.value));
 
   [summarizePrintValues("Studio", typeVals),
-   summarizePrintValues("Canon", canonVals),
-   summarizePrintValues("Multiverse", mvVals)]
+  summarizePrintValues("Canon", canonVals),
+  summarizePrintValues("Multiverse", mvVals)]
     .filter(Boolean)
     .forEach(detail => details.push(detail));
 
@@ -1762,8 +1763,8 @@ function initFilterDropdowns() {
   document.querySelectorAll(".filter-pill").forEach(btn => {
     btn.addEventListener("click", e => {
       e.stopPropagation();
-      const panel   = btn.nextElementSibling;
-      const isOpen  = !panel.classList.contains("hidden");
+      const panel = btn.nextElementSibling;
+      const isOpen = !panel.classList.contains("hidden");
       closeAllDropdowns();
       if (!isOpen) {
         panel.classList.remove("hidden");
@@ -1794,7 +1795,7 @@ function closeAllDropdowns() {
 function matchMultiverseHeight() {
   if (mobileQuery.matches) return;
   const studio = document.getElementById("typeFilter");
-  const mv     = document.getElementById("multiverseFilter");
+  const mv = document.getElementById("multiverseFilter");
   if (!studio || !mv) return;
   mv.style.height = studio.offsetHeight + "px";
 }
@@ -1814,9 +1815,9 @@ const applyTheme = (theme) => {
   document.documentElement.classList.toggle("dark", theme === "dark");
   document.body.classList.toggle("dark", theme === "dark");
   const light = document.getElementById("theme-color-light");
-  const dark  = document.getElementById("theme-color-dark");
+  const dark = document.getElementById("theme-color-dark");
   if (light) { light.media = theme === "dark" ? "not all" : "all"; light.content = "#eef1f6"; }
-  if (dark)  { dark.media  = theme === "dark" ? "all" : "not all"; dark.content  = "#090b10"; }
+  if (dark) { dark.media = theme === "dark" ? "all" : "not all"; dark.content = "#090b10"; }
   safeStorage.set("theme", theme);
   if (theme === "light") {
     applyMoodTheme("classic");
@@ -2264,7 +2265,7 @@ function showBadgeDetails(badgeId) {
 
     const totalCount = badge.targetCount !== undefined ? badge.targetCount : qualifyingItems.length;
     const watchedCount = watchedQualifying.length;
-    
+
     // Check unlock
     if (badge.targetCount !== undefined) {
       unlocked = watchedCount >= badge.targetCount;
@@ -2349,7 +2350,7 @@ function showBadgeDetails(badgeId) {
         previousActiveElement?.focus();
       }
     }, { once: true });
-    
+
     // Safety fallback in case transitionend fails
     setTimeout(() => {
       if (modal.parentNode) {
@@ -2377,7 +2378,7 @@ function initScrollMap() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const percent = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
-    
+
     if (needle) {
       needle.style.top = `${percent}%`;
     }
@@ -2392,7 +2393,7 @@ function initScrollMap() {
       const phaseLabels = ["Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5", "Phase 6"];
       let minDistance = Infinity;
       for (const pLabel of phaseLabels) {
-        const selector = activeJourney 
+        const selector = activeJourney
           ? `.mcu-card.card-journey-match[data-phase="${pLabel}"]`
           : `.mcu-card[data-phase="${pLabel}"]`;
         const firstCard = document.querySelector(selector);
@@ -2427,8 +2428,8 @@ function initScrollMap() {
   }, { passive: true });
 
   // Global smooth scroll anchor lookup
-  window.scrollToPhase = function(phaseNum) {
-    const selector = activeJourney 
+  window.scrollToPhase = function (phaseNum) {
+    const selector = activeJourney
       ? `.mcu-card.card-journey-match[data-phase="Phase ${phaseNum}"]`
       : `.mcu-card[data-phase="Phase ${phaseNum}"]`;
     const firstCard = document.querySelector(selector);
@@ -2500,7 +2501,7 @@ function initJourneyTracker() {
     tesseract: { color: "#2ec4b6", soft: "rgba(46, 196, 182, 0.35)", softBg: "rgba(46, 196, 182, 0.12)" }
   };
 
-  window.updateJourneyUI = function() {
+  window.updateJourneyUI = function () {
     journeyPills.forEach(pill => {
       const journey = pill.dataset.journey;
       if (activeJourney === journey) {
@@ -2566,7 +2567,7 @@ function initJourneyTracker() {
     const scrollNodes = document.querySelectorAll(".scroll-map-node");
     scrollNodes.forEach(node => {
       const label = node.getAttribute("data-phase-label");
-      const selector = activeJourney 
+      const selector = activeJourney
         ? `.mcu-card.card-journey-match[data-phase="${label}"]`
         : `.mcu-card[data-phase="${label}"]`;
       const hasCards = document.querySelector(selector) !== null;
@@ -2635,7 +2636,7 @@ function updateNextUpBanner(data) {
       floatingPill.classList.remove("visible");
     } else {
       floatingPill.classList.add("visible");
-      
+
       const pillTitle = document.getElementById("floating-next-title");
       if (pillTitle) {
         pillTitle.textContent = nextUnwatched.title;
@@ -2951,18 +2952,18 @@ function initNebulaParticles() {
   const canvas = document.getElementById("nebulaParticles");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
-  
+
   let width = (canvas.width = window.innerWidth);
   let height = (canvas.height = window.innerHeight);
-  
+
   window.addEventListener("resize", () => {
     width = (canvas.width = window.innerWidth);
     height = (canvas.height = window.innerHeight);
   });
-  
+
   const particles = [];
   const numParticles = 40;
-  
+
   for (let i = 0; i < numParticles; i++) {
     particles.push({
       x: Math.random() * width,
@@ -2975,23 +2976,23 @@ function initNebulaParticles() {
       pulsePhase: Math.random() * Math.PI
     });
   }
-  
+
   function getThemeColors() {
     const style = getComputedStyle(document.body);
     const accent = style.getPropertyValue("--accent").trim() || "#818cf8";
     const accentSec = style.getPropertyValue("--accent-secondary").trim() || "#f472b6";
     return { accent, accentSec };
   }
-  
+
   let colors = getThemeColors();
-  
+
   // Hook to theme changes cleanly without interval polling
   const prevThemeHandler = window.onMoodThemeChange;
   window.onMoodThemeChange = () => {
     if (prevThemeHandler) prevThemeHandler();
     colors = getThemeColors();
   };
-  
+
   let isTabActive = !document.hidden;
   let nebulaRafId = null;
 
@@ -3004,31 +3005,31 @@ function initNebulaParticles() {
       nebulaRafId = null;
     }
   });
-  
+
   function animate() {
     if (!isTabActive) {
       nebulaRafId = null;
       return;
     }
-    
+
     ctx.clearRect(0, 0, width, height);
-    
+
     particles.forEach(p => {
       p.x += p.speedX;
       p.y += p.speedY;
-      
+
       if (p.x < 0) p.x = width;
       if (p.x > width) p.x = 0;
       if (p.y < 0) p.y = height;
       if (p.y > height) p.y = 0;
-      
+
       p.pulsePhase += p.pulseSpeed;
       const currentAlpha = p.alpha + Math.sin(p.pulsePhase) * 0.12;
       const useSecColor = p.size > 4.2;
-      
+
       ctx.beginPath();
       ctx.globalAlpha = Math.max(0.02, Math.min(0.65, currentAlpha));
-      
+
       const color = useSecColor ? colors.accentSec : colors.accent;
       ctx.fillStyle = color;
       ctx.shadowBlur = 15;
@@ -3036,12 +3037,12 @@ function initNebulaParticles() {
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       ctx.fill();
     });
-    
+
     ctx.shadowBlur = 0;
     ctx.globalAlpha = 1.0;
     nebulaRafId = requestAnimationFrame(animate);
   }
-  
+
   nebulaRafId = requestAnimationFrame(animate);
 }
 
@@ -3049,24 +3050,24 @@ function initFloatingThemePill() {
   const pillContent = document.getElementById("floating-theme-content");
   const dropdown = document.getElementById("floatingThemeDropdown");
   const floatingPill = document.getElementById("floatingThemePill");
-  
+
   if (!pillContent || !dropdown || !floatingPill) return;
-  
+
   pillContent.addEventListener("click", event => {
     event.stopPropagation();
     const isHidden = dropdown.classList.toggle("hidden");
     pillContent.setAttribute("aria-expanded", String(!isHidden));
   });
-  
+
   dropdown.addEventListener("click", event => {
     event.stopPropagation();
   });
-  
+
   document.addEventListener("click", () => {
     dropdown.classList.add("hidden");
     pillContent.setAttribute("aria-expanded", "false");
   });
-  
+
   dropdown.querySelectorAll(".theme-dot").forEach(dot => {
     dot.addEventListener("click", () => {
       applyMoodTheme(dot.getAttribute("data-theme"));
@@ -3130,7 +3131,7 @@ function initKeyboardShortcuts() {
     }
 
     if ((e.key === "/" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") ||
-        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
+      ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
       const searchInput = document.getElementById("search");
       if (searchInput) {
         e.preventDefault();
